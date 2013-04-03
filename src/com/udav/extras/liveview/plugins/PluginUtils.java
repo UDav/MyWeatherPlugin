@@ -184,6 +184,7 @@ public final class PluginUtils {
         paint.getTextBounds(weatherType, 0, weatherType.length(), bounds);
         canvas.drawText(w.getWeatherType(), (128-bounds.right)/2, 75, paint);
         //draw humidity
+        paint.setTextSize(10);
         String humidity = "Вл. "+w.getHumidity()+"%";
         paint.getTextBounds(humidity, 0, humidity.length(), bounds);
         canvas.drawText(humidity, 0, 128, paint);
@@ -192,6 +193,10 @@ public final class PluginUtils {
         paint.getTextBounds(pressure, 0, pressure.length(), bounds);
         canvas.drawText(pressure, 128-bounds.right, 128, paint);
         //draw wind
+        String wind = w.getWindDerection() + " " + w.getWindSpeed() + "м/с";
+        paint.getTextBounds(wind, 0, wind.length(), bounds);
+        canvas.drawText(wind, (128-bounds.right)/2, 100, paint);
+        
         
         //canvas.drawText(w.getTommorow(), 0, 128, paint);
         //canvas.drawText(w.getTommorowNight(), 100, 128, paint);

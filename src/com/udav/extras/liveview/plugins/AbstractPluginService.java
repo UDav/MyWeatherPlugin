@@ -252,7 +252,7 @@ public abstract class AbstractPluginService extends Service {
         Log.d(PluginConstants.LOG_TAG, "Enter AbstractPluginService.onCreate.");
 
         // Load menu icon
-        int iconId = PluginUtils.getDynamicResourceId(this, "icon", "drawable");
+        int iconId = PluginUtils.getDynamicResourceId(this, "weather", "drawable");
         mMenuIcon = PluginUtils.storeIconToFile(this, getResources(), iconId, TEMPLATE_MENU_ICON);
     }
 
