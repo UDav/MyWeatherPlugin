@@ -3,22 +3,23 @@
       package="com.udav.mymeatherplugin"
       android:versionCode="1"
       android:versionName="1.0">
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:description="@string/application_description">
-        <service android:name="com.sonyericsson.extras.liveview.plugins.myweather.MyWeatherPluginService"
+        <service android:name="com.udav.extras.liveview.plugins.myweather.MyWeatherPluginService"
 				 android:label="Sandbox plugin service">
 			<intent-filter>
-				<action android:name="com.sonyericsson.extras.liveview.plugins.sandbox.sandboxpluginservice"/>
+				<action android:name="com.udav.extras.liveview.plugins.myweather.myweatherplugin"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
         </service>
-        <activity android:name="com.sonyericsson.extras.liveview.plugins.PluginPreferences" 
+        <activity android:name="com.udav.extras.liveview.plugins.PluginPreferences" 
 				  android:label="Sandbox plugin preferences">
 			<intent-filter>
-				<action android:name="com.sonyericsson.extras.liveview.plugins.sandbox.PREFERENCES"></action> 	
+				<action android:name="com.udav.extras.liveview.plugins.myweather.PREFERENCES"></action> 	
 				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
         </activity>
-	    <receiver android:name="com.sonyericsson.extras.liveview.plugins.PluginReceiver">
+	    <receiver android:name="com.udav.extras.liveview.plugins.PluginReceiver">
 			<intent-filter>
 				<action android:name="com.sonyericsson.extras.liveview.LAUNCH_PLUGIN" />
 			</intent-filter>

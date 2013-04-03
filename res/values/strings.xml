@@ -5,7 +5,7 @@
     	The following strings needs to be defined in order for the Plugin to function.
     -->
     <string name="pluginname">MyWeatherPlugin</string>
-    <string name="intent_preferences">com.sonyericsson.extras.liveview.plugins.sandbox.PREFERENCES</string>
-    <string name="intent_service">com.sonyericsson.extras.liveview.plugins.sandbox.sandboxpluginservice</string>
+    <string name="intent_preferences">com.udav.extras.liveview.plugins.myweather.PREFERENCES</string>
+    <string name="intent_service">com.udav.extras.liveview.plugins.myweather.myweatherplugin</string>
     <string name="application_description">Extends:com.sonyericsson.extras.liveview</string>
 </resources>
