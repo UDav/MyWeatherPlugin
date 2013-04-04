@@ -23,6 +23,9 @@
 
 package com.udav.extras.liveview.plugins.myweather;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.udav.extras.liveview.plugins.AbstractPluginService;
 import com.udav.extras.liveview.plugins.PluginConstants;
 import com.udav.extras.liveview.plugins.PluginUtils;
@@ -40,16 +43,23 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		w = new Weather();
-		//set city id // get it this http://weather.yandex.ru/static/cities.xml
-		w.weatherParse("28698");
-		System.out.println(w.toString());
-		PluginUtils.sendWeatherTextBitmapCanvas(mLiveViewAdapter, mPluginId, w, 128, 14);
+		
+		System.out.println("I'm Started!");		
 	}
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		w = new Weather();
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask(){
+			@Override
+			public void run(){
+				w.weatherParse("28698");
+			}
+		}, 0, 15*60*1000); // run every 15 min
+		//run thread where update weather data
+		System.out.println("I'm created!"); 
 		
 	}
 	
@@ -70,13 +80,18 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	 * Must be implemented. Starts plugin work, if any.
 	 */
 	protected void startWork() {
-
+		//show data
+		//set city id // get it this http://weather.yandex.ru/static/cities.xml
+		System.out.println(w.toString());
+		PluginUtils.sendWeatherTextBitmapCanvas(mLiveViewAdapter, mPluginId, w, 128, 14);
+		System.out.println("I'm start work!");
 	}
 	
 	/**
 	 * Must be implemented. Stops plugin work, if any.
 	 */
 	protected void stopWork() {
+		System.out.println("I'm stop work!"); 
 	}
 	
 	/**
