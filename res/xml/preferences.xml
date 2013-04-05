@@ -4,7 +4,19 @@
 	                	android:title="Enabled"
 	                	android:order = "0"
 	                	android:defaultValue = "false"/>
-	<!--
+	<EditTextPreference
+		android:key="updateIntPref"
+	    android:title="Update interval" 
+	    android:summary="Input interval in minutes"
+	    android:inputType="number"
+	    android:defaultValue="15"
+	/>
+	<ListPreference 
+	    android:key="cityPref"
+	    android:title="City"
+	    android:summary="Select your city"
+	/>
+<!--
 		Add your additional preferences here.
 	-->
 </PreferenceScreen>

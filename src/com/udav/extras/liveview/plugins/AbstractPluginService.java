@@ -396,7 +396,7 @@ public abstract class AbstractPluginService extends Service {
     /**
      * Fetches and sets the shared preferences.
      */
-    private void setPreferences() {
+    protected void setPreferences() {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     }
 

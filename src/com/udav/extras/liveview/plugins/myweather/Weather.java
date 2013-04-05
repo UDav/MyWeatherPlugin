@@ -1,8 +1,11 @@
 package com.udav.extras.liveview.plugins.myweather;
 
+
 import java.io.InputStream;
+
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,6 +25,7 @@ public class Weather {
 	private int temperature;
 	private String windDerection;
 	private String windSpeed;
+	private String updateTime;
 	
 	public String getCity() {
 		return city;
@@ -103,12 +107,23 @@ public class Weather {
 		this.windSpeed = windSpeed;
 	}
 
+	public String getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
+
 	public String toString(){
 		return "Weather[city="+city+", weatherType="+weatherType+", temperature="+temperature+
 				", humidity="+humidity+"]";
 	}
 	
 	public void weatherParse(String cityID){
+		Date d = new Date();
+		updateTime = d.getHours()+":"+d.getMinutes()+":"+d.getSeconds();
+		System.out.println(updateTime);
 		NodeList nl = null;
 		try {
 			Document doc = null;

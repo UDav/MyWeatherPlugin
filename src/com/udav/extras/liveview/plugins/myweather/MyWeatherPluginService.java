@@ -39,6 +39,8 @@ import android.util.Log;
 
 public class MyWeatherPluginService extends AbstractPluginService {
 	private Weather w;
+	private Timer timer;
+	private int updateInterval;
     
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -51,13 +53,15 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	public void onCreate() {
 		super.onCreate();
 		w = new Weather();
-		Timer timer = new Timer();
+		timer = new Timer();
+		this.setPreferences();
+		updateInterval = Integer.parseInt(mSharedPreferences.getString("updateInt", "15"));
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
 				w.weatherParse("28698");
 			}
-		}, 0, 15*60*1000); // run every 15 min
+		}, 0, updateInterval*60*1000); 
 		//run thread where update weather data
 		System.out.println("I'm created!"); 
 		
@@ -83,7 +87,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		//show data
 		//set city id // get it this http://weather.yandex.ru/static/cities.xml
 		System.out.println(w.toString());
-		PluginUtils.sendWeatherTextBitmapCanvas(mLiveViewAdapter, mPluginId, w, 128, 14);
+		PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 128, 14);
 		System.out.println("I'm start work!");
 	}
 	
@@ -125,7 +129,13 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	 * The shared preferences has been changed. Take actions needed. 
 	 */	
 	protected void onSharedPreferenceChangedExtended(SharedPreferences prefs, String key) {
-		
+		updateInterval = Integer.parseInt(prefs.getString("updateInt", "15"));
+		timer.scheduleAtFixedRate(new TimerTask(){
+			@Override
+			public void run(){
+				w.weatherParse("28698");
+			}
+		}, 0, updateInterval*60*1000); 
 	}
 
 	protected void startPlugin() {
@@ -160,7 +170,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
-			
+			w.weatherParse("28698");
+			PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 128, 14);
 		}
 	}
 
@@ -176,7 +187,9 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	protected void openInPhone(String openInPhoneAction) {
 		Log.d(PluginConstants.LOG_TAG, "openInPhone: " + openInPhoneAction);
 	}
-	
+	/**
+	 * Called when screen change status
+	 */
     protected void screenMode(int mode) {
         Log.d(PluginConstants.LOG_TAG, "screenMode: screen is now " + ((mode == 0) ? "OFF" : "ON"));
     }

@@ -152,7 +152,7 @@ public final class PluginUtils {
         }
     }
     
-    public static void sendWeatherTextBitmapCanvas(LiveViewAdapter liveView, int pluginId, Weather w, int bitmapSizeX, int fontSize) {
+    public static void displayWeather(LiveViewAdapter liveView, int pluginId, Weather w, int bitmapSizeX, int fontSize) {
         // Empty bitmap and link the canvas to it
         Bitmap bitmap = null;
         try {
@@ -173,6 +173,10 @@ public final class PluginUtils {
         String city = w.getCity();
         paint.getTextBounds(city, 0, city.length(), bounds);
         canvas.drawText(w.getCity(), (128-bounds.right)/2, 0-bounds.top+5, paint);
+        //draw time update
+        String updateTime = w.getUpdateTime();
+        paint.getTextBounds(updateTime, 0, updateTime.length(), bounds);
+        canvas.drawText(updateTime, (128-bounds.right)/2, (0-bounds.top+5)*2, paint);
         //draw temperature
         paint.setTextSize(20);
         String temperature = String.valueOf(w.getTemperature());
