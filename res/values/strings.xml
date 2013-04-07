@@ -8,4 +8,10 @@
     <string name="intent_preferences">com.udav.extras.liveview.plugins.myweather.PREFERENCES</string>
     <string name="intent_service">com.udav.extras.liveview.plugins.myweather.myweatherplugin</string>
     <string name="application_description">Extends:com.sonyericsson.extras.liveview</string>
+    
+    <!-- Preferences -->
+    <string name="upd_int_title">Update interval</string>
+    <string name="upd_int_sum">Input interval in minutes</string>
+    <string name="city">City</string>
+    <string name="city_sum">Select your city</string>
 </resources>

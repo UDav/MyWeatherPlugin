@@ -152,11 +152,12 @@ public final class PluginUtils {
         }
     }
     
-    public static void displayWeather(LiveViewAdapter liveView, int pluginId, Weather w, int bitmapSizeX, int fontSize) {
+    public static void displayWeather(LiveViewAdapter liveView, int pluginId, Weather w, int fontSize) {
         // Empty bitmap and link the canvas to it
         Bitmap bitmap = null;
         try {
-            bitmap = Bitmap.createBitmap(bitmapSizeX, 128, Bitmap.Config.RGB_565);
+            bitmap = Bitmap.createBitmap(PluginConstants.LIVEVIEW_SCREEN_X, 
+            		PluginConstants.LIVEVIEW_SCREEN_Y, Bitmap.Config.RGB_565);
         }
         catch(IllegalArgumentException  e) {
             return;
@@ -169,38 +170,50 @@ public final class PluginUtils {
         paint.setTextSize(fontSize);
 
         Rect bounds = new Rect();
+       
         //draw city
         String city = w.getCity();
         paint.getTextBounds(city, 0, city.length(), bounds);
-        canvas.drawText(w.getCity(), (128-bounds.right)/2, 0-bounds.top+5, paint);
+        canvas.drawText(w.getCity(), (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 
+        		0-bounds.top+5, paint);
+        
         //draw time update
         String updateTime = w.getUpdateTime();
         paint.getTextBounds(updateTime, 0, updateTime.length(), bounds);
-        canvas.drawText(updateTime, (128-bounds.right)/2, (0-bounds.top+5)*2, paint);
+        canvas.drawText(updateTime, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 
+        		(0-bounds.top+5)*2, paint);
+       
         //draw temperature
         paint.setTextSize(20);
         String temperature = String.valueOf(w.getTemperature());
         paint.getTextBounds(temperature, 0, temperature.length(), bounds);
-        canvas.drawText(temperature, (128-bounds.right)/2, (128+bounds.top)/2, paint);
+        canvas.drawText(temperature, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 
+        		(PluginConstants.LIVEVIEW_SCREEN_Y+bounds.top)/2, paint);
         paint.setTextSize(fontSize);
+        
         //draw weather type
         String weatherType = w.getWeatherType();
         paint.getTextBounds(weatherType, 0, weatherType.length(), bounds);
-        canvas.drawText(w.getWeatherType(), (128-bounds.right)/2, 75, paint);
+        canvas.drawText(w.getWeatherType(), (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 75, paint);
+        
         //draw humidity
         paint.setTextSize(10);
         String humidity = "Вл. "+w.getHumidity()+"%";
         paint.getTextBounds(humidity, 0, humidity.length(), bounds);
         canvas.drawText(humidity, 0, 128, paint);
+        
         //draw pressure
         String pressure = w.getPressure();
         paint.getTextBounds(pressure, 0, pressure.length(), bounds);
-        canvas.drawText(pressure, 128-bounds.right, 128, paint);
+        canvas.drawText(pressure, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, 
+        		PluginConstants.LIVEVIEW_SCREEN_Y, paint);
+        
         //draw wind
         String wind = w.getWindDerection() + " " + w.getWindSpeed() + "м/с";
         paint.getTextBounds(wind, 0, wind.length(), bounds);
-        canvas.drawText(wind, (128-bounds.right)/2, 100, paint);
+        canvas.drawText(wind, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 100, paint);
         
+        canvas.drawBitmap(w.getPict(), 0, 0, paint);
         
         //canvas.drawText(w.getTommorow(), 0, 128, paint);
         //canvas.drawText(w.getTommorowNight(), 100, 128, paint);

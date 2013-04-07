@@ -1,26 +1,3 @@
-/*
- * Copyright (c) 2010 Sony Ericsson
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * 
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 package com.udav.extras.liveview.plugins.myweather;
 
 import java.util.Timer;
@@ -41,6 +18,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	private Weather w;
 	private Timer timer;
 	private int updateInterval;
+	private String cityID;
     
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -52,14 +30,23 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		/*new Thread() {
+			@Override
+			public void run(){
+				Parser.parseCity();
+			}
+		}.start();*/
+		Parser.parseCity();
 		w = new Weather();
 		timer = new Timer();
 		this.setPreferences();
 		updateInterval = Integer.parseInt(mSharedPreferences.getString("updateInt", "15"));
+		cityID = mSharedPreferences.getString("cityPref", "28698");
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
-				w.weatherParse("28698");
+				//set city id // get it this http://weather.yandex.ru/static/cities.xml
+				w.weatherParse(cityID);
 			}
 		}, 0, updateInterval*60*1000); 
 		//run thread where update weather data
@@ -85,9 +72,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	 */
 	protected void startWork() {
 		//show data
-		//set city id // get it this http://weather.yandex.ru/static/cities.xml
 		System.out.println(w.toString());
-		PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 128, 14);
+		PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 14);
 		System.out.println("I'm start work!");
 	}
 	
@@ -130,10 +116,11 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	 */	
 	protected void onSharedPreferenceChangedExtended(SharedPreferences prefs, String key) {
 		updateInterval = Integer.parseInt(prefs.getString("updateInt", "15"));
+		cityID = prefs.getString("cityPref", "28698");
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
-				w.weatherParse("28698");
+				w.weatherParse(cityID);
 			}
 		}, 0, updateInterval*60*1000); 
 	}
@@ -171,7 +158,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
 			w.weatherParse("28698");
-			PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 128, 14);
+			PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}
 

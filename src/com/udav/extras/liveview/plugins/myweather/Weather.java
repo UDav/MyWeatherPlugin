@@ -1,6 +1,9 @@
 package com.udav.extras.liveview.plugins.myweather;
 
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import java.net.URL;
@@ -15,6 +18,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 public class Weather {
 	private String city;
 	private String weatherType;
@@ -26,6 +32,7 @@ public class Weather {
 	private String windDerection;
 	private String windSpeed;
 	private String updateTime;
+	private Bitmap pict;
 	
 	public String getCity() {
 		return city;
@@ -115,9 +122,34 @@ public class Weather {
 		this.updateTime = updateTime;
 	}
 
+	public Bitmap getPict() {
+		return pict;
+	}
+
+	public void setPict(Bitmap pict) {
+		this.pict = pict;
+	}
+
 	public String toString(){
 		return "Weather[city="+city+", weatherType="+weatherType+", temperature="+temperature+
 				", humidity="+humidity+"]";
+	}
+	
+	private void loadPict(){
+		InputStream in = null;
+		try {
+			in = new URL("http://img.yandex.net/i/wiz"+imgId+".png").openStream();
+			pict = BitmapFactory.decodeStream(in);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally{
+			if (in != null)
+				try {
+					in.close();
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+		}
 	}
 	
 	public void weatherParse(String cityID){
@@ -158,6 +190,7 @@ public class Weather {
 							} else
 							if ("image".equals(childOfChild.getNodeName())){
 								imgId = childOfChild.getTextContent();
+								loadPict();
 							} else
 							if ("humidity".equals(childOfChild.getNodeName())){
 								humidity = childOfChild.getTextContent();
