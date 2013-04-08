@@ -46,7 +46,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			@Override
 			public void run(){
 				//set city id // get it this http://weather.yandex.ru/static/cities.xml
-				w.weatherParse(cityID);
+				w = Parser.weatherParse(cityID);
 			}
 		}, 0, updateInterval*60*1000); 
 		//run thread where update weather data
@@ -120,7 +120,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
-				w.weatherParse(cityID);
+				w = Parser.weatherParse(cityID);
 			}
 		}, 0, updateInterval*60*1000); 
 	}
@@ -157,7 +157,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
-			w.weatherParse("28698");
+			w = Parser.weatherParse(cityID);
 			PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}

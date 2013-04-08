@@ -13,23 +13,39 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 public class Parser {
 	
-	public static ArrayList<String> resultCity = new ArrayList<String>();
-	public static ArrayList<String> resultCityID = new ArrayList<String>();
-
-	public static void parseCity(){
-		NodeList nl = null;
-		try {
-			Document doc = null;
-			URL url = new URL("http://weather.yandex.ru/static/cities.xml");
+	private static Document weatherData = null;
+	
+	private static Document loadData(String address){
+		Document doc = null;
+		try{
+			URL url = new URL(address);
 			URLConnection uc = url.openConnection();
 			InputStream is = uc.getInputStream();
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.parse(is);
 			doc.getDocumentElement().normalize();
-			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return doc;
+	}
+	
+	public static ArrayList<String> resultCity = new ArrayList<String>();
+	public static ArrayList<String> resultCityID = new ArrayList<String>();
+
+	/**
+	 * parse City list
+	 */
+	public static void parseCity(){
+		NodeList nl = null;
+		try {
+			Document doc = loadData("http://weather.yandex.ru/static/cities.xml");	
 			nl = doc.getElementsByTagName("cities").item(0).getChildNodes();
 			
 			for (int i=0; i<nl.getLength(); i++){
@@ -50,7 +66,143 @@ public class Parser {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	private static Bitmap loadPict(String imgId){
+		InputStream in = null;
+		Bitmap b = null;
+		try {
+			in = new URL("http://img.yandex.net/i/wiz"+imgId+".png").openStream();
+			b = BitmapFactory.decodeStream(in);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally{
+			if (in != null)
+				try {
+					in.close();
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+		}
+		return b;
+	}
+	
+	public static Weather weatherParse(String cityID){
+		Weather w = new Weather();
+		w.setUpdateTime(String.valueOf((System.currentTimeMillis() - w.getTime())/1000/60));
+		w.setTime(System.currentTimeMillis());
 		
+		NodeList nl = null;
+		try {
+			Document doc = loadData("http://export.yandex.ru/weather-ng/forecasts/"+cityID+".xml");
+			weatherData = doc;
+			
+			nl = doc.getElementsByTagName("forecast").item(0).getChildNodes();
+			
+			for (int i=0; i<nl.getLength(); i++){
+				Node child = nl.item(i);
+				
+				if (child instanceof Element) {
+					if (child.getNodeName().equals("fact")){
+						Node childOfChild = null;
+						for (int j=0; j<child.getChildNodes().getLength(); j++) {
+							childOfChild = child.getChildNodes().item(j);
+							
+							if ("station".equals(childOfChild.getNodeName()) && 
+									"ru".equals(((Element)childOfChild).getAttribute("lang"))) {
+								w.setCity(childOfChild.getTextContent());
+							} else
+							if ("temperature".equals(childOfChild.getNodeName())) {
+								w.setTemperature(Integer.parseInt(childOfChild.getTextContent()));
+							} else
+							if ("weather_type_short".equals(childOfChild.getNodeName())){
+								w.setWeatherType(childOfChild.getTextContent());
+							} else
+							if ("image".equals(childOfChild.getNodeName())){
+								w.setImgId(childOfChild.getTextContent());
+								w.setPict(loadPict(w.getImgId()));
+							} else
+							if ("humidity".equals(childOfChild.getNodeName())){
+								w.setHumidity(childOfChild.getTextContent());
+							}else
+							if ("wind_direction".equals(childOfChild.getNodeName())){
+								w.setWindDerection(childOfChild.getTextContent());
+							}else
+							if ("wind_speed".equals(childOfChild.getNodeName())) {
+								w.setWindSpeed(childOfChild.getTextContent());
+							}else
+							if ("pressure".equals(childOfChild.getNodeName())){
+								w.setPressure(childOfChild.getTextContent());
+							}
+						}
+					}
+				}
+			}
+			
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return w;
+	}
+	
+	public static ArrayList<ForecastWeather> forecast = new ArrayList<ForecastWeather>(); 
+	
+	public static void parseForecast(String cityID){
+		Document doc = null;
+		if (weatherData != null) {
+			doc = weatherData;
+		} else {
+			doc = loadData("http://export.yandex.ru/weather-ng/forecasts/"+cityID+".xml");
+		}
+		
+		NodeList nl = doc.getElementsByTagName("forecast").item(0).getChildNodes();
+		for (int i=0; i<nl.getLength(); i++){
+			Node child = nl.item(i);
+			
+			if (child instanceof Element) {
+				if (child.getNodeName().equals("day")){
+					ForecastWeather temp = new ForecastWeather();
+					temp.setDate(((Element) child).getAttribute("date"));
+					
+					Node childOfChild = null;
+					for (int j=0; j<child.getChildNodes().getLength(); j++) {
+						childOfChild = child.getChildNodes().item(j);
+						if (childOfChild instanceof Element) {
+							if (childOfChild.getNodeName().equals("day_part") &&
+									((Element)childOfChild).getAttribute("typeid").equals("5")){
+								Node childOfChildOfChild = null;
+								for (int k=0; k<childOfChild.getChildNodes().getLength(); k++) {
+									childOfChildOfChild = childOfChild.getChildNodes().item(k);
+									if ("temperature".equals(childOfChildOfChild.getNodeName())) {
+										temp.setDayTemp(childOfChildOfChild.getTextContent());
+									} else
+									if ("weather_type_short".equals(childOfChildOfChild.getNodeName())){
+										temp.setDayWeatherType(childOfChildOfChild.getTextContent());
+									} else
+									if ("image".equals(childOfChildOfChild.getNodeName())){
+										temp.setDayImgID(childOfChildOfChild.getTextContent());
+										temp.setDayBitmap(loadPict(temp.getDayImgID()));
+									} else
+									if ("humidity".equals(childOfChildOfChild.getNodeName())){
+										temp.setDayHumidity(childOfChildOfChild.getTextContent());
+									}else
+									if ("wind_direction".equals(childOfChildOfChild.getNodeName())){
+										temp.setDayWindDirection(childOfChildOfChild.getTextContent());
+									}else
+									if ("wind_speed".equals(childOfChildOfChild.getNodeName())) {
+										temp.setDayWindSpeed(childOfChildOfChild.getTextContent());
+									}else
+									if ("pressure".equals(childOfChildOfChild.getNodeName())){
+										temp.setDayPressure(childOfChildOfChild.getTextContent());
+									}
+								}
+							}
+							
+						}
+					}
+				}
+			}
+		}
 		
 	}
 	
