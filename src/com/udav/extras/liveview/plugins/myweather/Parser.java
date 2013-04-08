@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -89,8 +90,9 @@ public class Parser {
 	
 	public static Weather weatherParse(String cityID){
 		Weather w = new Weather();
-		w.setUpdateTime(String.valueOf((System.currentTimeMillis() - w.getTime())/1000/60));
-		w.setTime(System.currentTimeMillis());
+		
+		Date date = new Date();
+		w.setUpdateTime(date.getHours()+":"+date.getMinutes());
 		
 		NodeList nl = null;
 		try {

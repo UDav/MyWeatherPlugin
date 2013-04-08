@@ -14,7 +14,7 @@ public class Weather {
 	private String windSpeed;
 	private String updateTime;
 	private Bitmap pict;
-	private long time;
+	private long time = 0;
 	
 	public String getCity() {
 		return city;

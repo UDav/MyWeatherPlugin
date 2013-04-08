@@ -30,13 +30,13 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		/*new Thread() {
+		new Thread() {
 			@Override
 			public void run(){
 				Parser.parseCity();
 			}
-		}.start();*/
-		Parser.parseCity();
+		}.start();
+		//Parser.parseCity();
 		w = new Weather();
 		timer = new Timer();
 		this.setPreferences();

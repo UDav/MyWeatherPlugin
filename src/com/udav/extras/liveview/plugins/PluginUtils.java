@@ -191,10 +191,14 @@ public final class PluginUtils {
         		(PluginConstants.LIVEVIEW_SCREEN_Y+bounds.top)/2, paint);
         paint.setTextSize(fontSize);
         
+        //draw weather picture
         //draw weather type
         String weatherType = w.getWeatherType();
         paint.getTextBounds(weatherType, 0, weatherType.length(), bounds);
-        canvas.drawText(w.getWeatherType(), (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 75, paint);
+        Bitmap pict = w.getPict();
+        int x = (PluginConstants.LIVEVIEW_SCREEN_X-(pict.getWidth()+bounds.right))/2;
+        canvas.drawBitmap(pict, x, 75, paint);
+        canvas.drawText(w.getWeatherType(), x+pict.getWidth(), 85, paint);
         
         //draw humidity
         paint.setTextSize(10);
@@ -212,11 +216,6 @@ public final class PluginUtils {
         String wind = w.getWindDerection() + " " + w.getWindSpeed() + "м/с";
         paint.getTextBounds(wind, 0, wind.length(), bounds);
         canvas.drawText(wind, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 100, paint);
-        
-        canvas.drawBitmap(w.getPict(), 0, 0, paint);
-        
-        //canvas.drawText(w.getTommorow(), 0, 128, paint);
-        //canvas.drawText(w.getTommorowNight(), 100, 128, paint);
         
         try{ 
             liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);
