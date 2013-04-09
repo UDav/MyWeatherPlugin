@@ -9,6 +9,9 @@
     <string name="intent_service">com.udav.extras.liveview.plugins.myweather.myweatherplugin</string>
     <string name="application_description">Extends:com.sonyericsson.extras.liveview</string>
     
+	<string name="update">Update:</string>
+	<string name="wind">Wind:</string>    
+    
     <!-- Preferences -->
     <string name="upd_int_title">Update interval</string>
     <string name="upd_int_sum">Input interval in minutes</string>

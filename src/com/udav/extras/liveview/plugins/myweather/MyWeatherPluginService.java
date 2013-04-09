@@ -47,6 +47,10 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			public void run(){
 				//set city id // get it this http://weather.yandex.ru/static/cities.xml
 				w = Parser.weatherParse(cityID);
+				Parser.parseForecast(cityID);
+				System.out.println(Parser.forecast.size());
+				for (int i=0; i<Parser.forecast.size(); i++)
+					System.out.println(Parser.forecast.get(i).toString());
 			}
 		}, 0, updateInterval*60*1000); 
 		//run thread where update weather data
@@ -73,7 +77,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	protected void startWork() {
 		//show data
 		System.out.println(w.toString());
-		PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 14);
+		PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		System.out.println("I'm start work!");
 	}
 	
@@ -158,7 +162,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
 			w = Parser.weatherParse(cityID);
-			PluginUtils.displayWeather(mLiveViewAdapter, mPluginId, w, 14);
+			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}
 

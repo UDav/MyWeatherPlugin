@@ -202,6 +202,7 @@ public class Parser {
 							
 						}
 					}
+					forecast.add(temp);
 				}
 			}
 		}

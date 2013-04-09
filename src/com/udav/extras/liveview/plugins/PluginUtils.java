@@ -44,6 +44,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import com.udav.extras.liveview.plugins.myweather.Weather;
+import com.udav.mymeatherplugin.R;
 
 /**
  * Utils.
@@ -152,7 +153,7 @@ public final class PluginUtils {
         }
     }
     
-    public static void displayWeather(LiveViewAdapter liveView, int pluginId, Weather w, int fontSize) {
+    public static void displayWeather(Context context, LiveViewAdapter liveView, int pluginId, Weather w, int fontSize) {
         // Empty bitmap and link the canvas to it
         Bitmap bitmap = null;
         try {
@@ -178,10 +179,12 @@ public final class PluginUtils {
         		0-bounds.top+5, paint);
         
         //draw time update
-        String updateTime = w.getUpdateTime();
+        paint.setTextSize(10);
+        String updateTime = context.getString(R.string.update) + " " + w.getUpdateTime();
         paint.getTextBounds(updateTime, 0, updateTime.length(), bounds);
         canvas.drawText(updateTime, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 
         		(0-bounds.top+5)*2, paint);
+        paint.setTextSize(fontSize);
        
         //draw temperature
         paint.setTextSize(20);
@@ -197,7 +200,7 @@ public final class PluginUtils {
         paint.getTextBounds(weatherType, 0, weatherType.length(), bounds);
         Bitmap pict = w.getPict();
         int x = (PluginConstants.LIVEVIEW_SCREEN_X-(pict.getWidth()+bounds.right))/2;
-        canvas.drawBitmap(pict, x, 75, paint);
+        canvas.drawBitmap(pict, x, 85-pict.getHeight(), paint);
         canvas.drawText(w.getWeatherType(), x+pict.getWidth(), 85, paint);
         
         //draw humidity
@@ -213,7 +216,7 @@ public final class PluginUtils {
         		PluginConstants.LIVEVIEW_SCREEN_Y, paint);
         
         //draw wind
-        String wind = w.getWindDerection() + " " + w.getWindSpeed() + "м/с";
+        String wind = context.getString(R.string.wind) + " " + w.getWindDerection() + " " + w.getWindSpeed() + "м/с";
         paint.getTextBounds(wind, 0, wind.length(), bounds);
         canvas.drawText(wind, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 100, paint);
         

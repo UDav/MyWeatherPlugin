@@ -125,5 +125,10 @@ public class ForecastWeather {
 	public void setNightBitmap(Bitmap nightBitmap) {
 		this.nightBitmap = nightBitmap;
 	}
+	@Override
+	public String toString() {
+		System.out.println("Date=" + date +" day temp="+ dayTemp + " night temp="+nightTemp);
+		return super.toString();
+	}
 	
 }
