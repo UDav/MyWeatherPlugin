@@ -259,8 +259,9 @@ public final class PluginUtils {
         //draw day temperature
         String temp = fw.getDayTemp();
         paint.getTextBounds(temp, 0, temp.length(), bounds);
-        canvas.drawText(temp, 0, (0-bounds.top+5)*4, paint);
+        canvas.drawText(temp, 0, (0-bounds.top+5)*3, paint);
         //draw pict
+        canvas.drawBitmap(fw.getDayBitmap(), 0, (0-bounds.top+5)*3, paint);
         
         try{ 
             liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);

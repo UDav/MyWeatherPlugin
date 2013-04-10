@@ -19,6 +19,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	private Timer timer;
 	private int updateInterval;
 	private String cityID;
+	private int index = -1;
     
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -155,9 +156,23 @@ public class MyWeatherPluginService extends AbstractPluginService {
             }
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_RIGHT)) {
-			
+			index++;
+			if (index >= Parser.forecast.size()) {
+				index = -1;
+				PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+			} else
+			PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, Parser.forecast.get(index), 14);
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_LEFT)) {
+			index--;
+			if (index == -1) {
+				PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+			} else {
+				if (index < -1) {
+					index = Parser.forecast.size()-1;
+				}
+				PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, Parser.forecast.get(index), 14);
+			}
 			
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
