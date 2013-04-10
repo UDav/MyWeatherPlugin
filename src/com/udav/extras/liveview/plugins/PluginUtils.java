@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.udav.extras.liveview.plugins.myweather.ForecastWeather;
 import com.udav.extras.liveview.plugins.myweather.Weather;
 import com.udav.mymeatherplugin.R;
 
@@ -219,6 +220,47 @@ public final class PluginUtils {
         String wind = context.getString(R.string.wind) + " " + w.getWindDerection() + " " + w.getWindSpeed() + "м/с";
         paint.getTextBounds(wind, 0, wind.length(), bounds);
         canvas.drawText(wind, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 100, paint);
+        
+        try{ 
+            liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);
+        } catch(Exception e) {
+            Log.d(PluginConstants.LOG_TAG, "Failed to send bitmap", e);
+        }
+    }
+    
+    public static void displayForecastWeather(Context context, LiveViewAdapter liveView, int pluginId, ForecastWeather fw, int fontSize) {
+        // Empty bitmap and link the canvas to it
+        Bitmap bitmap = null;
+        try {
+            bitmap = Bitmap.createBitmap(PluginConstants.LIVEVIEW_SCREEN_X, 
+            		PluginConstants.LIVEVIEW_SCREEN_Y, Bitmap.Config.RGB_565);
+        }
+        catch(IllegalArgumentException  e) {
+            return;
+        }
+        
+        Canvas canvas = new Canvas(bitmap);
+
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(fontSize);
+
+        Rect bounds = new Rect();
+        
+        //draw date
+        String date = fw.getDate();
+        paint.getTextBounds(date, 0, date.length(), bounds);
+        canvas.drawText(date, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 
+        		0-bounds.top+5, paint);
+        //draw day
+        String day = "Day"; //get it from resource
+        paint.getTextBounds(day, 0, day.length(), bounds);
+        canvas.drawText(day, 0, (0-bounds.top+5)*2, paint);
+        //draw day temperature
+        String temp = fw.getDayTemp();
+        paint.getTextBounds(temp, 0, temp.length(), bounds);
+        canvas.drawText(temp, 0, (0-bounds.top+5)*4, paint);
+        //draw pict
         
         try{ 
             liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);
