@@ -37,7 +37,6 @@ public class MyWeatherPluginService extends AbstractPluginService {
 				Parser.parseCity();
 			}
 		}.start();
-		//Parser.parseCity();
 		w = new Weather();
 		timer = new Timer();
 		this.setPreferences();
@@ -126,6 +125,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			@Override
 			public void run(){
 				w = Parser.weatherParse(cityID);
+				Parser.parseForecast(cityID);
 			}
 		}, 0, updateInterval*60*1000); 
 	}

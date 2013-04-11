@@ -16,6 +16,18 @@ public class Weather {
 	private Bitmap pict;
 	private long time = 0;
 	
+	public Weather(){
+		city = "";
+		weatherType = "";
+		imgId = "";
+		humidity = "";
+		pressure = "";
+		temperature = -999;
+		windDerection = "";
+		updateTime = "00:00";
+		pict = null;
+	}
+	
 	public String getCity() {
 		return city;
 	}

@@ -20,7 +20,7 @@ public class ForecastWeather {
 	private String nightHumidity;
 	private String nightPressure;
 	private String nightWindDirection;
-	private String mightWindSpeed;
+	private String nightWindSpeed;
 	private Bitmap nightBitmap;
 	
 	public String getDate() {
@@ -113,11 +113,11 @@ public class ForecastWeather {
 	public void setNightWindDirection(String nightWindDirection) {
 		this.nightWindDirection = nightWindDirection;
 	}
-	public String getMightWindSpeed() {
-		return mightWindSpeed;
+	public String getNightWindSpeed() {
+		return nightWindSpeed;
 	}
-	public void setMightWindSpeed(String mightWindSpeed) {
-		this.mightWindSpeed = mightWindSpeed;
+	public void setNightWindSpeed(String nightWindSpeed) {
+		this.nightWindSpeed = nightWindSpeed;
 	}
 	public Bitmap getNightBitmap() {
 		return nightBitmap;

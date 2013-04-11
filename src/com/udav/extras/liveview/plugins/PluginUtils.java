@@ -154,6 +154,14 @@ public final class PluginUtils {
         }
     }
     
+    /**
+     * Draw current weather on display
+     * @param context
+     * @param liveView
+     * @param pluginId
+     * @param w
+     * @param fontSize
+     */
     public static void displayWeather(Context context, LiveViewAdapter liveView, int pluginId, Weather w, int fontSize) {
         // Empty bitmap and link the canvas to it
         Bitmap bitmap = null;
@@ -200,9 +208,11 @@ public final class PluginUtils {
         String weatherType = w.getWeatherType();
         paint.getTextBounds(weatherType, 0, weatherType.length(), bounds);
         Bitmap pict = w.getPict();
-        int x = (PluginConstants.LIVEVIEW_SCREEN_X-(pict.getWidth()+bounds.right))/2;
-        canvas.drawBitmap(pict, x, 85-pict.getHeight(), paint);
-        canvas.drawText(w.getWeatherType(), x+pict.getWidth(), 85, paint);
+        if (pict != null) {
+        	int x = (PluginConstants.LIVEVIEW_SCREEN_X-(pict.getWidth()+bounds.right))/2;
+        	canvas.drawBitmap(pict, x, 85-pict.getHeight(), paint);
+        	canvas.drawText(w.getWeatherType(), x+pict.getWidth(), 85, paint);
+        }
         
         //draw humidity
         paint.setTextSize(10);
@@ -228,6 +238,14 @@ public final class PluginUtils {
         }
     }
     
+    /**
+     * Draw forecast weather on display
+     * @param context
+     * @param liveView
+     * @param pluginId
+     * @param fw
+     * @param fontSize
+     */
     public static void displayForecastWeather(Context context, LiveViewAdapter liveView, int pluginId, ForecastWeather fw, int fontSize) {
         // Empty bitmap and link the canvas to it
         Bitmap bitmap = null;
@@ -252,8 +270,12 @@ public final class PluginUtils {
         paint.getTextBounds(date, 0, date.length(), bounds);
         canvas.drawText(date, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 
         		0-bounds.top+5, paint);
+        //draw separetor
+        canvas.drawLine(PluginConstants.LIVEVIEW_SCREEN_X/2, 0-bounds.top+5, 
+        		PluginConstants.LIVEVIEW_SCREEN_X/2, 
+        		PluginConstants.LIVEVIEW_SCREEN_Y, paint);
         //draw day
-        String day = "Day"; //get it from resource
+        String day = context.getString(R.string.day);
         paint.getTextBounds(day, 0, day.length(), bounds);
         canvas.drawText(day, 0, (0-bounds.top+5)*2, paint);
         //draw day temperature
@@ -262,6 +284,48 @@ public final class PluginUtils {
         canvas.drawText(temp, 0, (0-bounds.top+5)*3, paint);
         //draw pict
         canvas.drawBitmap(fw.getDayBitmap(), 0, (0-bounds.top+5)*3, paint);
+        //draw wind
+        String wind = fw.getDayWindDirection() +" "+ fw.getDayWindSpeed();
+        paint.getTextBounds(wind, 0, wind.length(), bounds);
+        int yWind = (0-bounds.top+5)*3+fw.getDayBitmap().getHeight()-bounds.top+5;
+        canvas.drawText(wind, 0, yWind, paint);
+        //draw humidity
+        String humidity = fw.getDayHumidity();
+        paint.getTextBounds(humidity, 0, humidity.length(), bounds);
+        int yHumidity = yWind-bounds.top+5;
+        canvas.drawText(humidity, 0, yHumidity, paint);
+        //draw pressure
+        String pressure = fw.getDayPressure();
+        paint.getTextBounds(pressure, 0, pressure.length(), bounds);
+        int yPressure = yHumidity-bounds.top+5;
+        canvas.drawText(pressure, 0, yPressure, paint);
+        
+        //draw Night
+        String night = context.getString(R.string.night);
+        paint.getTextBounds(night, 0, night.length(), bounds);
+        canvas.drawText(night, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, (0-bounds.top+5)*2, paint);
+        //draw day temperature
+        String nightTemp = fw.getNightTemp();
+        paint.getTextBounds(nightTemp, 0, nightTemp.length(), bounds);
+        canvas.drawText(nightTemp, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, (0-bounds.top+5)*3, paint);
+        //draw pict
+        canvas.drawBitmap(fw.getNightBitmap(), PluginConstants.LIVEVIEW_SCREEN_X-fw.getNightBitmap().getWidth(), 
+        		(0-bounds.top+5)*3, paint);
+        //draw wind
+        String nightWind = fw.getNightWindDirection() +" "+ fw.getNightWindSpeed();
+        paint.getTextBounds(nightWind, 0, nightWind.length(), bounds);
+        int yNightWind = (0-bounds.top+5)*3+fw.getNightBitmap().getHeight()-bounds.top+5;
+        canvas.drawText(wind, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, yNightWind, paint);
+        //draw humidity
+        String nightHumidity = fw.getNightHumidity();
+        paint.getTextBounds(nightHumidity, 0, nightHumidity.length(), bounds);
+        int yNightHumidity = yNightWind-bounds.top+5;
+        canvas.drawText(nightHumidity, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, yNightHumidity, paint);
+        //draw pressure
+        String nightPressure = fw.getNightPressure();
+        paint.getTextBounds(pressure, 0, pressure.length(), bounds);
+        int yNightPressure = yHumidity-bounds.top+5;
+        canvas.drawText(nightPressure, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, yNightPressure, paint);
         
         try{ 
             liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);

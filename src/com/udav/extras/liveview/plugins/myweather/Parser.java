@@ -170,6 +170,7 @@ public class Parser {
 					for (int j=0; j<child.getChildNodes().getLength(); j++) {
 						childOfChild = child.getChildNodes().item(j);
 						if (childOfChild instanceof Element) {
+							//parse day forecast
 							if (childOfChild.getNodeName().equals("day_part") &&
 									((Element)childOfChild).getAttribute("typeid").equals("5")){
 								Node childOfChildOfChild = null;
@@ -199,7 +200,36 @@ public class Parser {
 									}
 								}
 							}
-							
+							//parse night forecast
+							if (childOfChild.getNodeName().equals("day_part") &&
+									((Element)childOfChild).getAttribute("typeid").equals("6")){
+								Node childOfChildOfChild = null;
+								for (int k=0; k<childOfChild.getChildNodes().getLength(); k++) {
+									childOfChildOfChild = childOfChild.getChildNodes().item(k);
+									if ("temperature".equals(childOfChildOfChild.getNodeName())) {
+										temp.setNightTemp(childOfChildOfChild.getTextContent());
+									} else
+									if ("weather_type_short".equals(childOfChildOfChild.getNodeName())){
+										temp.setNightWeatherType(childOfChildOfChild.getTextContent());
+									} else
+									if ("image".equals(childOfChildOfChild.getNodeName())){
+										temp.setNightImgID(childOfChildOfChild.getTextContent());
+										temp.setNightBitmap(loadPict(temp.getNightImgID()));
+									} else
+									if ("humidity".equals(childOfChildOfChild.getNodeName())){
+										temp.setNightHumidity(childOfChildOfChild.getTextContent());
+									}else
+									if ("wind_direction".equals(childOfChildOfChild.getNodeName())){
+										temp.setNightWindDirection(childOfChildOfChild.getTextContent());
+									}else
+									if ("wind_speed".equals(childOfChildOfChild.getNodeName())) {
+										temp.setNightWindSpeed(childOfChildOfChild.getTextContent());
+									}else
+									if ("pressure".equals(childOfChildOfChild.getNodeName())){
+										temp.setNightPressure(childOfChildOfChild.getTextContent());
+									}
+								}
+							}
 						}
 					}
 					forecast.add(temp);
