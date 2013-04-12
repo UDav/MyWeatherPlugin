@@ -147,9 +147,10 @@ public class Parser {
 		return w;
 	}
 	
-	public static ArrayList<ForecastWeather> forecast = new ArrayList<ForecastWeather>(); 
+	public static ArrayList<ForecastWeather> forecast; 
 	
 	public static void parseForecast(String cityID){
+		forecast = new ArrayList<ForecastWeather>();
 		Document doc = null;
 		if (weatherData != null) {
 			doc = weatherData;

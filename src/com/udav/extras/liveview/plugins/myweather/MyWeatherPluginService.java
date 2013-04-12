@@ -8,8 +8,11 @@ import com.udav.extras.liveview.plugins.PluginConstants;
 import com.udav.extras.liveview.plugins.PluginUtils;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -34,6 +37,13 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		new Thread() {
 			@Override
 			public void run(){
+				while (!isNetworkAvailable()){
+					try {
+						Thread.sleep(1000*60*15);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 				Parser.parseCity();
 			}
 		}.start();
@@ -45,12 +55,13 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
+				if (isNetworkAvailable()) {
 				//set city id // get it this http://weather.yandex.ru/static/cities.xml
-				w = Parser.weatherParse(cityID);
-				Parser.parseForecast(cityID);
-				System.out.println(Parser.forecast.size());
-				for (int i=0; i<Parser.forecast.size(); i++)
-					System.out.println(Parser.forecast.get(i).toString());
+					w = Parser.weatherParse(cityID);
+					Parser.parseForecast(cityID);
+					//for (int i=0; i<Parser.forecast.size(); i++)
+					//	System.out.println(Parser.forecast.get(i).toString());
+				}
 			}
 		}, 0, updateInterval*60*1000); 
 		//run thread where update weather data
@@ -124,8 +135,10 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
-				w = Parser.weatherParse(cityID);
-				Parser.parseForecast(cityID);
+				if (isNetworkAvailable()) {
+					w = Parser.weatherParse(cityID);
+					Parser.parseForecast(cityID);
+				}
 			}
 		}, 0, updateInterval*60*1000); 
 	}
@@ -176,7 +189,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
-			w = Parser.weatherParse(cityID);
+			if (isNetworkAvailable())
+				w = Parser.weatherParse(cityID);
 			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}
@@ -199,6 +213,12 @@ public class MyWeatherPluginService extends AbstractPluginService {
     protected void screenMode(int mode) {
         Log.d(PluginConstants.LOG_TAG, "screenMode: screen is now " + ((mode == 0) ? "OFF" : "ON"));
     }
+    
+    public boolean isNetworkAvailable() {
+	    ConnectivityManager connectivityManager = (ConnectivityManager) getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null;
+	}
 
     
     
