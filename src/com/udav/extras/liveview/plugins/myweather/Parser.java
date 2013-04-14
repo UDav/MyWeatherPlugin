@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -36,14 +37,11 @@ public class Parser {
 		}
 		return doc;
 	}
-	
-	public static ArrayList<String> resultCity = new ArrayList<String>();
-	public static ArrayList<String> resultCityID = new ArrayList<String>();
 
 	/**
-	 * parse City list
+	 * parse City list and insert value in database
 	 */
-	public static void parseCity(){
+	public static void parseCity(Context context){
 		NodeList nl = null;
 		try {
 			Document doc = loadData("http://weather.yandex.ru/static/cities.xml");	
@@ -57,8 +55,8 @@ public class Parser {
 						for(int j=0; j<child.getChildNodes().getLength(); j++){
 							childOfChild = child.getChildNodes().item(j);
 							if (childOfChild instanceof Element){
-								resultCity.add(childOfChild.getTextContent());
-								resultCityID.add(((Element)childOfChild).getAttribute("id"));
+								DBHelper.setDataToDB(context, ((Element)childOfChild).getAttribute("id"),
+										childOfChild.getTextContent());
 							}
 						}
 					}
@@ -90,10 +88,6 @@ public class Parser {
 	
 	public static Weather weatherParse(String cityID){
 		Weather w = new Weather();
-		
-		Date date = new Date();
-		w.setUpdateTime(date.getHours()+":"+date.getMinutes());
-		
 		NodeList nl = null;
 		try {
 			Document doc = loadData("http://export.yandex.ru/weather-ng/forecasts/"+cityID+".xml");
@@ -144,13 +138,14 @@ public class Parser {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+		Date date = new Date();
+		w.setUpdateTime(date.getHours()+":"+date.getMinutes());
 		return w;
 	}
 	
-	public static ArrayList<ForecastWeather> forecast; 
 	
-	public static void parseForecast(String cityID){
-		forecast = new ArrayList<ForecastWeather>();
+	public static ArrayList<ForecastWeather> parseForecast(String cityID){
+		ArrayList<ForecastWeather> forecast = new ArrayList<ForecastWeather>();
 		Document doc = null;
 		if (weatherData != null) {
 			doc = weatherData;
@@ -237,7 +232,7 @@ public class Parser {
 				}
 			}
 		}
-		
+		return forecast;	
 	}
 	
 }

@@ -1,5 +1,6 @@
 package com.udav.extras.liveview.plugins.myweather;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,6 +24,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	private int updateInterval;
 	private String cityID;
 	private int index = -1;
+	private ArrayList<ForecastWeather> forecast;
     
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -34,6 +36,9 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		android.os.Debug.waitForDebugger();
+		
+		if (DBHelper.getDataFromDB(getBaseContext()).getCount() == 0)
 		new Thread() {
 			@Override
 			public void run(){
@@ -44,7 +49,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 						e.printStackTrace();
 					}
 				}
-				Parser.parseCity();
+				Parser.parseCity(getBaseContext());
 			}
 		}.start();
 		w = new Weather();
@@ -58,7 +63,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 				if (isNetworkAvailable()) {
 				//set city id // get it this http://weather.yandex.ru/static/cities.xml
 					w = Parser.weatherParse(cityID);
-					Parser.parseForecast(cityID);
+					forecast = Parser.parseForecast(cityID);
+					System.out.println("update!!!");
 					//for (int i=0; i<Parser.forecast.size(); i++)
 					//	System.out.println(Parser.forecast.get(i).toString());
 				}
@@ -132,12 +138,13 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	protected void onSharedPreferenceChangedExtended(SharedPreferences prefs, String key) {
 		updateInterval = Integer.parseInt(prefs.getString("updateInt", "15"));
 		cityID = prefs.getString("cityPref", "28698");
+		
 		timer.scheduleAtFixedRate(new TimerTask(){
 			@Override
 			public void run(){
 				if (isNetworkAvailable()) {
 					w = Parser.weatherParse(cityID);
-					Parser.parseForecast(cityID);
+					forecast = Parser.parseForecast(cityID);
 				}
 			}
 		}, 0, updateInterval*60*1000); 
@@ -170,11 +177,11 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_RIGHT)) {
 			index++;
-			if (index >= Parser.forecast.size()) {
+			if (index >= forecast.size()) {
 				index = -1;
 				PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 			} else
-			PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, Parser.forecast.get(index), 14);
+			PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, forecast.get(index), 14);
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_LEFT)) {
 			index--;
@@ -182,15 +189,17 @@ public class MyWeatherPluginService extends AbstractPluginService {
 				PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 			} else {
 				if (index < -1) {
-					index = Parser.forecast.size()-1;
+					index = forecast.size()-1;
 				}
-				PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, Parser.forecast.get(index), 14);
+				PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, forecast.get(index), 14);
 			}
 			
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
-			if (isNetworkAvailable())
+			if (isNetworkAvailable()){
 				w = Parser.weatherParse(cityID);
+				Parser.parseForecast(cityID);
+			}
 			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}
@@ -214,6 +223,10 @@ public class MyWeatherPluginService extends AbstractPluginService {
         Log.d(PluginConstants.LOG_TAG, "screenMode: screen is now " + ((mode == 0) ? "OFF" : "ON"));
     }
     
+    /**
+     * check network connection
+     * @return
+     */
     public boolean isNetworkAvailable() {
 	    ConnectivityManager connectivityManager = (ConnectivityManager) getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

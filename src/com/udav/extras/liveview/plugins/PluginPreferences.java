@@ -1,8 +1,10 @@
 package com.udav.extras.liveview.plugins;
 
+import com.udav.extras.liveview.plugins.myweather.DBHelper;
 import com.udav.extras.liveview.plugins.myweather.Parser;
 import com.udav.mymeatherplugin.R;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
@@ -26,12 +28,19 @@ public class PluginPreferences extends PreferenceActivity {
         selectCity.setKey("cityPref");
         selectCity.setTitle(getString(R.string.city));
         selectCity.setSummary(getString(R.string.city_sum));
+        android.os.Debug.waitForDebugger();
         
-        String city[] = new String[Parser.resultCity.size()], 
-        		cityID[] = new String[Parser.resultCityID.size()];
-        for (int i=0; i<Parser.resultCity.size(); i++) {
-        	city[i] = Parser.resultCity.get(i);
-        	cityID[i] = Parser.resultCityID.get(i);
+        
+        Cursor mCursor = DBHelper.getDataFromDB(getBaseContext());
+        int count = mCursor.getCount();
+        
+        String city[] = new String[count], 
+        		cityID[] = new String[count];
+        mCursor.moveToFirst();
+        for (int i=0; i<count; i++) {
+        	city[i] = mCursor.getString(2);
+        	cityID[i] = mCursor.getString(1);
+        	mCursor.moveToNext();
         }
         selectCity.setEntries(city);
         selectCity.setEntryValues(cityID);
