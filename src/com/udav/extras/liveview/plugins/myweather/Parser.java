@@ -117,7 +117,11 @@ public class Parser {
 								w.setWeatherType(childOfChild.getTextContent());
 							} else
 							if ("image".equals(childOfChild.getNodeName())){
-								w.setImgID(Integer.parseInt(childOfChild.getTextContent()));
+								String t = childOfChild.getTextContent();
+								if (t.charAt(0) == 'n')
+									w.setImgID(Integer.parseInt(t.substring(1))+20);
+								else
+									w.setImgID(Integer.parseInt(t));
 							} else
 							if ("humidity".equals(childOfChild.getNodeName())){
 								w.setHumidity(childOfChild.getTextContent());
