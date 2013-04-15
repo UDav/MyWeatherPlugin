@@ -25,19 +25,31 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	private String cityID;
 	private int index = -1;
 	private ArrayList<ForecastWeather> forecast;
+	
+	private class MyTimerTask extends TimerTask{
+		@Override
+		public void run() {
+			if (isNetworkAvailable()) {
+				//set city id // get it this http://weather.yandex.ru/static/cities.xml
+					long time = System.currentTimeMillis();
+					w = Parser.weatherParse(cityID);
+					forecast = Parser.parseForecast(cityID);
+					System.out.println("update!!! "+(System.currentTimeMillis()-time));
+				}
+			
+		}
+		
+	}
     
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
-		
 		System.out.println("I'm Started!");		
 	}
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		android.os.Debug.waitForDebugger();
-		
 		if (DBHelper.getDataFromDB(getBaseContext()).getCount() == 0)
 		new Thread() {
 			@Override
@@ -55,22 +67,10 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		w = new Weather();
 		timer = new Timer();
 		this.setPreferences();
-		updateInterval = Integer.parseInt(mSharedPreferences.getString("updateInt", "15"));
+		updateInterval = Integer.parseInt(mSharedPreferences.getString("updateIntPref", "15"));
 		cityID = mSharedPreferences.getString("cityPref", "28698");
-		timer.scheduleAtFixedRate(new TimerTask(){
-			@Override
-			public void run(){
-				if (isNetworkAvailable()) {
-				//set city id // get it this http://weather.yandex.ru/static/cities.xml
-					w = Parser.weatherParse(cityID);
-					forecast = Parser.parseForecast(cityID);
-					System.out.println("update!!!");
-					//for (int i=0; i<Parser.forecast.size(); i++)
-					//	System.out.println(Parser.forecast.get(i).toString());
-				}
-			}
-		}, 0, updateInterval*60*1000); 
-		//run thread where update weather data
+		//timer.cancel();
+		timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);
 		System.out.println("I'm created!"); 
 		
 	}
@@ -136,18 +136,14 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	 * The shared preferences has been changed. Take actions needed. 
 	 */	
 	protected void onSharedPreferenceChangedExtended(SharedPreferences prefs, String key) {
-		updateInterval = Integer.parseInt(prefs.getString("updateInt", "15"));
+		updateInterval = Integer.parseInt(prefs.getString("updateIntPref", "15"));
 		cityID = prefs.getString("cityPref", "28698");
+		System.out.println("upd int "+updateInterval);
+		System.out.println("city "+cityID);
 		
-		timer.scheduleAtFixedRate(new TimerTask(){
-			@Override
-			public void run(){
-				if (isNetworkAvailable()) {
-					w = Parser.weatherParse(cityID);
-					forecast = Parser.parseForecast(cityID);
-				}
-			}
-		}, 0, updateInterval*60*1000); 
+		timer.cancel();
+		timer = new Timer();
+		timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);
 	}
 
 	protected void startPlugin() {
@@ -176,30 +172,37 @@ public class MyWeatherPluginService extends AbstractPluginService {
             }
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_RIGHT)) {
-			index++;
-			if (index >= forecast.size()) {
-				index = -1;
-				PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
-			} else
-			PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, forecast.get(index), 14);
+			if (forecast != null) {
+				index++;
+				if (index >= forecast.size()) {
+					index = -1;
+					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+				} else
+					PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, forecast.get(index), 14);
+			}
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_LEFT)) {
-			index--;
-			if (index == -1) {
-				PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
-			} else {
-				if (index < -1) {
-					index = forecast.size()-1;
+			if (forecast != null) {
+				index--;
+				if (index == -1) {
+					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+				} else {
+					if (index < -1) {
+						index = forecast.size()-1;
+					}
+					PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, forecast.get(index), 14);
 				}
-				PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, forecast.get(index), 14);
 			}
 			
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
-			if (isNetworkAvailable()){
+			timer.cancel();
+			timer = new Timer();
+			timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);
+			/*if (isNetworkAvailable()){
 				w = Parser.weatherParse(cityID);
-				Parser.parseForecast(cityID);
-			}
+				forecast = Parser.parseForecast(cityID);
+			}*/
 			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}

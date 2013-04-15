@@ -28,7 +28,7 @@ public class PluginPreferences extends PreferenceActivity {
         selectCity.setKey("cityPref");
         selectCity.setTitle(getString(R.string.city));
         selectCity.setSummary(getString(R.string.city_sum));
-        android.os.Debug.waitForDebugger();
+        //android.os.Debug.waitForDebugger();
         
         
         Cursor mCursor = DBHelper.getDataFromDB(getBaseContext());

@@ -67,7 +67,7 @@ public class Parser {
 		}
 	}
 	
-	private static Bitmap loadPict(String imgId){
+/*	private static Bitmap loadPict(String imgId){
 		InputStream in = null;
 		Bitmap b = null;
 		try {
@@ -84,7 +84,7 @@ public class Parser {
 				}
 		}
 		return b;
-	}
+	}*/
 	
 	public static Weather weatherParse(String cityID){
 		Weather w = new Weather();
@@ -95,6 +95,8 @@ public class Parser {
 			
 			nl = doc.getElementsByTagName("forecast").item(0).getChildNodes();
 			
+			w.setCity(((Element)doc.getElementsByTagName("forecast").item(0)).getAttribute("city"));
+			
 			for (int i=0; i<nl.getLength(); i++){
 				Node child = nl.item(i);
 				
@@ -104,10 +106,10 @@ public class Parser {
 						for (int j=0; j<child.getChildNodes().getLength(); j++) {
 							childOfChild = child.getChildNodes().item(j);
 							
-							if ("station".equals(childOfChild.getNodeName()) && 
+							/*if ("station".equals(childOfChild.getNodeName()) && 
 									"ru".equals(((Element)childOfChild).getAttribute("lang"))) {
 								w.setCity(childOfChild.getTextContent());
-							} else
+							} else*/
 							if ("temperature".equals(childOfChild.getNodeName())) {
 								w.setTemperature(Integer.parseInt(childOfChild.getTextContent()));
 							} else
@@ -115,8 +117,7 @@ public class Parser {
 								w.setWeatherType(childOfChild.getTextContent());
 							} else
 							if ("image".equals(childOfChild.getNodeName())){
-								w.setImgId(childOfChild.getTextContent());
-								w.setPict(loadPict(w.getImgId()));
+								w.setImgID(Integer.parseInt(childOfChild.getTextContent()));
 							} else
 							if ("humidity".equals(childOfChild.getNodeName())){
 								w.setHumidity(childOfChild.getTextContent());
@@ -179,8 +180,11 @@ public class Parser {
 										temp.setDayWeatherType(childOfChildOfChild.getTextContent());
 									} else
 									if ("image".equals(childOfChildOfChild.getNodeName())){
-										temp.setDayImgID(childOfChildOfChild.getTextContent());
-										temp.setDayBitmap(loadPict(temp.getDayImgID()));
+										String t = childOfChildOfChild.getTextContent();
+										if (t.charAt(0) == 'n')
+											temp.setDayImgID(Integer.parseInt(t.substring(1))+20);
+										else
+											temp.setDayImgID(Integer.parseInt(t));
 									} else
 									if ("humidity".equals(childOfChildOfChild.getNodeName())){
 										temp.setDayHumidity(childOfChildOfChild.getTextContent());
@@ -209,8 +213,11 @@ public class Parser {
 										temp.setNightWeatherType(childOfChildOfChild.getTextContent());
 									} else
 									if ("image".equals(childOfChildOfChild.getNodeName())){
-										temp.setNightImgID(childOfChildOfChild.getTextContent());
-										temp.setNightBitmap(loadPict(temp.getNightImgID()));
+										String t = childOfChildOfChild.getTextContent();
+										if (t.charAt(0) == 'n')
+											temp.setNightImgID(Integer.parseInt(t.substring(1))+20);
+										else
+											temp.setNightImgID(Integer.parseInt(t));
 									} else
 									if ("humidity".equals(childOfChildOfChild.getNodeName())){
 										temp.setNightHumidity(childOfChildOfChild.getTextContent());

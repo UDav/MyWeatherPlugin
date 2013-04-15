@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 public class Weather {
 	private String city;
 	private String weatherType;
-	private String imgId;
+	private int imgID;
 	private String humidity;
 	private String pressure;
 	private String tommorow = "0", tommorowNight = "0";
@@ -19,7 +19,7 @@ public class Weather {
 	public Weather(){
 		city = "";
 		weatherType = "";
-		imgId = "";
+		imgID = 0;
 		humidity = "";
 		pressure = "";
 		temperature = -999;
@@ -44,12 +44,12 @@ public class Weather {
 		this.weatherType = weatherType;
 	}
 
-	public String getImgId() {
-		return imgId;
+	public int getImgID() {
+		return imgID;
 	}
 
-	public void setImgId(String imgId) {
-		this.imgId = imgId;
+	public void setImgID(int imgID) {
+		this.imgID = imgID;
 	}
 
 	public String getHumidity() {

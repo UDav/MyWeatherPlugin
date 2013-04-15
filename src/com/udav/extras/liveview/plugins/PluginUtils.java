@@ -31,8 +31,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
-import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.text.Layout;
 import android.text.StaticLayout;
@@ -208,7 +206,8 @@ public final class PluginUtils {
         //draw weather type
         String weatherType = w.getWeatherType();
         paint.getTextBounds(weatherType, 0, weatherType.length(), bounds);
-        Bitmap pict = w.getPict();
+        
+        Bitmap pict = BitmapFactory.decodeResource(context.getResources(), selectImage(w.getImgID()));
         if (pict != null) {
         	int x = (PluginConstants.LIVEVIEW_SCREEN_X-(pict.getWidth()+bounds.right))/2;
         	canvas.drawBitmap(pict, x, 85-pict.getHeight(), paint);
@@ -223,14 +222,19 @@ public final class PluginUtils {
         
         //draw pressure
         String pressure = w.getPressure();
+        Bitmap pressurePict = BitmapFactory.decodeResource(context.getResources(), R.drawable.pressure);
         paint.getTextBounds(pressure, 0, pressure.length(), bounds);
         canvas.drawText(pressure, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, 
         		PluginConstants.LIVEVIEW_SCREEN_Y, paint);
+        canvas.drawBitmap(pressurePict, PluginConstants.LIVEVIEW_SCREEN_X-pressurePict.getWidth()-bounds.right-5, 
+        		PluginConstants.LIVEVIEW_SCREEN_Y - pressurePict.getHeight(), paint);
         
         //draw wind
         String wind = context.getString(R.string.wind) + " " + w.getWindDerection() + " " + w.getWindSpeed() + "м/с";
+        Bitmap windPict = BitmapFactory.decodeResource(context.getResources(), R.drawable.wind);
         paint.getTextBounds(wind, 0, wind.length(), bounds);
         canvas.drawText(wind, (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2, 100, paint);
+        canvas.drawBitmap(windPict, 0, 80, paint);
         
         try{ 
             liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);
@@ -284,11 +288,12 @@ public final class PluginUtils {
         paint.getTextBounds(temp, 0, temp.length(), bounds);
         canvas.drawText(temp, 0, (0-bounds.top+5)*3, paint);
         //draw pict
-        canvas.drawBitmap(fw.getDayBitmap(), 0, (0-bounds.top+5)*3, paint);
+        Bitmap dayPict = BitmapFactory.decodeResource(context.getResources(), selectImage(fw.getDayImgID()));
+        canvas.drawBitmap(dayPict, 0, (0-bounds.top+5)*3, paint);
         //draw wind
         String wind = fw.getDayWindDirection() +" "+ fw.getDayWindSpeed();
         paint.getTextBounds(wind, 0, wind.length(), bounds);
-        int yWind = (0-bounds.top+5)*3+fw.getDayBitmap().getHeight()-bounds.top+5;
+        int yWind = (0-bounds.top+5)*3+dayPict.getHeight()-bounds.top+5;
         canvas.drawText(wind, 0, yWind, paint);
         //draw humidity
         String humidity = fw.getDayHumidity();
@@ -310,12 +315,13 @@ public final class PluginUtils {
         paint.getTextBounds(nightTemp, 0, nightTemp.length(), bounds);
         canvas.drawText(nightTemp, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, (0-bounds.top+5)*3, paint);
         //draw pict
-        canvas.drawBitmap(fw.getNightBitmap(), PluginConstants.LIVEVIEW_SCREEN_X-fw.getNightBitmap().getWidth(), 
+        Bitmap nightPict = BitmapFactory.decodeResource(context.getResources(), selectImage(fw.getNightImgID()));
+        canvas.drawBitmap(nightPict, PluginConstants.LIVEVIEW_SCREEN_X-nightPict.getWidth(), 
         		(0-bounds.top+5)*3, paint);
         //draw wind
         String nightWind = fw.getNightWindDirection() +" "+ fw.getNightWindSpeed();
         paint.getTextBounds(nightWind, 0, nightWind.length(), bounds);
-        int yNightWind = (0-bounds.top+5)*3+fw.getNightBitmap().getHeight()-bounds.top+5;
+        int yNightWind = (0-bounds.top+5)*3+nightPict.getHeight()-bounds.top+5;
         canvas.drawText(nightWind, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, yNightWind, paint);
         //draw humidity
         String nightHumidity = fw.getNightHumidity();
@@ -396,5 +402,127 @@ public final class PluginUtils {
     private static int centerY(Bitmap bitmap) {
         return (PluginConstants.LIVEVIEW_SCREEN_Y/2) - (bitmap.getHeight()/2);
     }
-
+    
+    /**
+     * day ID 1-18
+     * night ID 21-38
+     * @param imgID
+     * @return
+     */
+    private static int selectImage(int imgID){
+    	int pictID = 0;
+    	switch (imgID){
+    		case 1:
+    			pictID = R.drawable.wiz1;
+    			break;
+    		case 2:
+    			pictID = R.drawable.wiz2;
+    			break;
+    		case 3:
+    			pictID = R.drawable.wiz3;
+    			break;
+    		case 4:
+    			pictID = R.drawable.wiz4;
+    			break;
+    		case 5:
+    			pictID = R.drawable.wiz5;
+    			break;
+    		case 6:
+    			pictID = R.drawable.wiz6;
+    			break;
+    		case 7:
+    			pictID = R.drawable.wiz7;
+    			break;
+    		case 8:
+    			pictID = R.drawable.wiz8;
+    			break;
+    		case 9:
+    			pictID = R.drawable.wiz9;
+    			break;
+    		case 10:
+    			pictID = R.drawable.wiz10;
+    			break;
+    		case 11:
+    			pictID = R.drawable.wiz11;
+    			break;
+    		case 12:
+    			pictID = R.drawable.wiz12;
+    			break;
+    		case 13:
+    			pictID = R.drawable.wiz13;
+    			break;
+    		case 14:
+    			pictID = R.drawable.wiz14;
+    			break;
+    		case 15:
+    			pictID = R.drawable.wiz15;
+    			break;
+    		case 16:
+    			pictID = R.drawable.wiz16;
+    			break;
+    		case 17:
+    			pictID = R.drawable.wiz17;
+    			break;
+    		case 18:
+    			pictID = R.drawable.wiz18;
+    			break;
+    		case 21:
+    			pictID = R.drawable.wiz21;
+    			break;
+    		case 22:
+    			pictID = R.drawable.wiz22;
+    			break;
+    		case 23:
+    			pictID = R.drawable.wiz23;
+    			break;
+    		case 24:
+    			pictID = R.drawable.wiz24;
+    			break;
+    		case 25:
+    			pictID = R.drawable.wiz25;
+    			break;
+    		case 26:
+    			pictID = R.drawable.wiz26;
+    			break;
+    		case 27:
+    			pictID = R.drawable.wiz27;
+    			break;
+    		case 28:
+    			pictID = R.drawable.wiz28;
+    			break;
+    		case 29:
+    			pictID = R.drawable.wiz29;
+    			break;
+    		case 30:
+    			pictID = R.drawable.wiz30;
+    			break;
+    		case 31:
+    			pictID = R.drawable.wiz31;
+    			break;
+    		case 32:
+    			pictID = R.drawable.wiz32;
+    			break;
+    		case 33:
+    			pictID = R.drawable.wiz33;
+    			break;
+    		case 34:
+    			pictID = R.drawable.wiz34;
+    			break;
+    		case 35:
+    			pictID = R.drawable.wiz35;
+    			break;
+    		case 36:
+    			pictID = R.drawable.wiz36;
+    			break;
+    		case 37:
+    			pictID = R.drawable.wiz37;
+    			break;
+    		case 38:
+    			pictID = R.drawable.wiz38;
+    			break;
+    	
+    	}
+    	return pictID;
+    }
+    
 }

@@ -7,7 +7,7 @@ public class ForecastWeather {
 	// day data
 	private String dayTemp;
 	private String dayWeatherType;
-	private String dayImgID;
+	private int dayImgID;
 	private String dayHumidity;
 	private String dayPressure;
 	private String dayWindDirection;
@@ -16,7 +16,7 @@ public class ForecastWeather {
 	//night data
 	private String nightTemp;
 	private String nightWeatherType;
-	private String nightImgID;
+	private int nightImgID;
 	private String nightHumidity;
 	private String nightPressure;
 	private String nightWindDirection;
@@ -41,10 +41,10 @@ public class ForecastWeather {
 	public void setDayWeatherType(String dayWeatherType) {
 		this.dayWeatherType = dayWeatherType;
 	}
-	public String getDayImgID() {
+	public int getDayImgID() {
 		return dayImgID;
 	}
-	public void setDayImgID(String dayImgID) {
+	public void setDayImgID(int dayImgID) {
 		this.dayImgID = dayImgID;
 	}
 	public String getDayHumidity() {
@@ -89,10 +89,10 @@ public class ForecastWeather {
 	public void setNightWeatherType(String nightWeatherType) {
 		this.nightWeatherType = nightWeatherType;
 	}
-	public String getNightImgID() {
+	public int getNightImgID() {
 		return nightImgID;
 	}
-	public void setNightImgID(String nightImgID) {
+	public void setNightImgID(int nightImgID) {
 		this.nightImgID = nightImgID;
 	}
 	public String getNightHumidity() {
