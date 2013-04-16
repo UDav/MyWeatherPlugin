@@ -23,6 +23,26 @@ public class ForecastWeather {
 	private String nightWindSpeed;
 	private Bitmap nightBitmap;
 	
+	public ForecastWeather(){
+		date="00:00";
+		
+		dayTemp = "-999";
+		dayWeatherType = "x";
+		dayImgID = 0;
+		dayHumidity = "x";
+		dayPressure = "x";
+		dayWindDirection = "x";
+		dayWindSpeed = "x";
+		
+		nightTemp = "-999";
+		nightWeatherType = "x";
+		nightImgID = 0;
+		nightHumidity = "x";
+		nightPressure = "x";
+		nightWindDirection = "x";
+		nightWindSpeed = "x";
+	}
+	
 	public String getDate() {
 		return date;
 	}

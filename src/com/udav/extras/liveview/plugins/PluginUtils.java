@@ -333,9 +333,12 @@ public final class PluginUtils {
         //draw wind
         paint.setTextSize(10);
         String nightWind = fw.getNightWindDirection() +" "+ fw.getNightWindSpeed();
+        Bitmap nightWindPict = BitmapFactory.decodeResource(context.getResources(), R.drawable.wind);
         paint.getTextBounds(nightWind, 0, nightWind.length(), bounds);
         int yNightWind = (0-bounds.top+5)*3+nightPict.getHeight()-bounds.top+5;
         canvas.drawText(nightWind, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, yNightWind, paint);
+        canvas.drawBitmap(nightWindPict, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right-nightWindPict.getWidth()-5, 
+        		yNightWind-nightWindPict.getHeight(), paint);
         //draw humidity
         String nightHumidity = fw.getNightHumidity();
         paint.getTextBounds(nightHumidity, 0, nightHumidity.length(), bounds);
