@@ -293,21 +293,30 @@ public final class PluginUtils {
         //draw pict
         Bitmap dayPict = BitmapFactory.decodeResource(context.getResources(), selectImage(fw.getDayImgID()));
         canvas.drawBitmap(dayPict, 0, (0-bounds.top+5)*3, paint);
+        
+        paint.setTextSize(10);
         //draw wind
         String wind = fw.getDayWindDirection() +" "+ fw.getDayWindSpeed();
+        Bitmap windPict = BitmapFactory.decodeResource(context.getResources(), R.drawable.wind);
         paint.getTextBounds(wind, 0, wind.length(), bounds);
-        int yWind = (0-bounds.top+5)*3+dayPict.getHeight()-bounds.top+5;
-        canvas.drawText(wind, 0, yWind, paint);
+        int yWind = (0-bounds.top+5)*3+dayPict.getHeight()-bounds.top+10;
+        canvas.drawText(wind, windPict.getWidth()+5, yWind, paint);
+        canvas.drawBitmap(windPict, 0, yWind-windPict.getHeight(), paint);
         //draw humidity
-        String humidity = fw.getDayHumidity();
+        String humidity = fw.getDayHumidity()+"%";
+        Bitmap humidityPict = BitmapFactory.decodeResource(context.getResources(), R.drawable.humidity);
         paint.getTextBounds(humidity, 0, humidity.length(), bounds);
         int yHumidity = yWind-bounds.top+5;
-        canvas.drawText(humidity, 0, yHumidity, paint);
+        canvas.drawText(humidity, humidityPict.getWidth()+5, yHumidity, paint);
+        canvas.drawBitmap(humidityPict, 0, yHumidity-humidityPict.getHeight(), paint);
         //draw pressure
         String pressure = fw.getDayPressure();
+        Bitmap pressurePict = BitmapFactory.decodeResource(context.getResources(), R.drawable.pressure);
         paint.getTextBounds(pressure, 0, pressure.length(), bounds);
         int yPressure = yHumidity-bounds.top+5;
-        canvas.drawText(pressure, 0, yPressure, paint);
+        canvas.drawText(pressure, pressurePict.getWidth()+5, yPressure, paint);
+        canvas.drawBitmap(pressurePict, 0, yPressure-pressurePict.getHeight(), paint);
+        paint.setTextSize(fontSize);
         
         //draw Night
         String night = context.getString(R.string.night);
@@ -322,6 +331,7 @@ public final class PluginUtils {
         canvas.drawBitmap(nightPict, PluginConstants.LIVEVIEW_SCREEN_X-nightPict.getWidth(), 
         		(0-bounds.top+5)*3, paint);
         //draw wind
+        paint.setTextSize(10);
         String nightWind = fw.getNightWindDirection() +" "+ fw.getNightWindSpeed();
         paint.getTextBounds(nightWind, 0, nightWind.length(), bounds);
         int yNightWind = (0-bounds.top+5)*3+nightPict.getHeight()-bounds.top+5;
@@ -336,6 +346,7 @@ public final class PluginUtils {
         paint.getTextBounds(nightPressure, 0, pressure.length(), bounds);
         int yNightPressure = yHumidity-bounds.top+5;
         canvas.drawText(nightPressure, PluginConstants.LIVEVIEW_SCREEN_X-bounds.right, yNightPressure, paint);
+        paint.setTextSize(fontSize);
         
         try{ 
             liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);

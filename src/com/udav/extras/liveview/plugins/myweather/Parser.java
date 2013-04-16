@@ -144,7 +144,9 @@ public class Parser {
 			e.printStackTrace();
 		}
 		Date date = new Date();
-		w.setUpdateTime(date.getHours()+":"+date.getMinutes());
+		int hours = date.getHours();
+		int min = date.getMinutes();
+		w.setUpdateTime((hours<10)?"0"+hours:hours+":"+((min<10)?"0"+min:min));
 		return w;
 	}
 	
