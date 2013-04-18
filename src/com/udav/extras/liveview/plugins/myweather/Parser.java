@@ -14,9 +14,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.udav.extras.liveview.plugins.PluginConstants;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 public class Parser {
 	
@@ -34,6 +37,8 @@ public class Parser {
 			doc.getDocumentElement().normalize();
 		} catch (Exception e) {
 			e.printStackTrace();
+			Log.d(PluginConstants.LOG_TAG, "can't load file! ", e);
+			//Log.e(PluginConstants.LOG_TAG, "can't load file! ", e);
 		}
 		return doc;
 	}
@@ -146,7 +151,7 @@ public class Parser {
 		Date date = new Date();
 		int hours = date.getHours();
 		int min = date.getMinutes();
-		w.setUpdateTime((hours<10)?"0"+hours:hours+":"+((min<10)?"0"+min:min));
+		w.setUpdateTime(((hours<10)?"0"+hours:hours)+":"+((min<10)?"0"+min:min));
 		return w;
 	}
 	

@@ -8,6 +8,7 @@ import com.udav.extras.liveview.plugins.AbstractPluginService;
 import com.udav.extras.liveview.plugins.PluginConstants;
 import com.udav.extras.liveview.plugins.PluginUtils;
 
+import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -34,7 +35,9 @@ public class MyWeatherPluginService extends AbstractPluginService {
 					long time = System.currentTimeMillis();
 					w = Parser.weatherParse(cityID);
 					forecast = Parser.parseForecast(cityID);
-					System.out.println("update!!! "+(System.currentTimeMillis()-time));
+					Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
+				} else {
+					Log.d(PluginConstants.LOG_TAG, "not internet connection!");
 				}
 			
 		}
@@ -50,6 +53,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		this.startForeground(123, new Notification());
 		Thread cityThread = null;
 		if (DBHelper.getDataFromDB(getBaseContext()).getCount() == 0){
 			cityThread  = new Thread() {
@@ -83,6 +87,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();	
+		Log.d(PluginConstants.LOG_TAG, "I'm die! They destroy me!");
 		stopWork();
 	}
 	
@@ -149,6 +154,12 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		timer.cancel();
 		timer = new Timer();
 		timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);
+	}
+
+	@Override
+	public boolean stopService(Intent name) {
+		Log.d(PluginConstants.LOG_TAG, "I'm die! They stoped me!");
+		return super.stopService(name);
 	}
 
 	protected void startPlugin() {
