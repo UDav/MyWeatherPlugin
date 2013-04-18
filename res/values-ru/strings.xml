@@ -16,6 +16,8 @@
 	<!--  Weather forecast display-->
 	<string name="night">Ночь</string>
 	<string name="day">День</string>
+	<string name="pressure">мм</string>
+	<string name="windSpeed">м/с</string>
     
     <!-- Preferences -->
     <string name="upd_int_title">Интервал обновлений</string>

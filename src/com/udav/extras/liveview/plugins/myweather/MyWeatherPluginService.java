@@ -50,20 +50,25 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		if (DBHelper.getDataFromDB(getBaseContext()).getCount() == 0)
-		new Thread() {
-			@Override
-			public void run(){
-				while (!isNetworkAvailable()){
-					try {
-						Thread.sleep(1000*60*15);
-					} catch (Exception e) {
-						e.printStackTrace();
+		Thread cityThread = null;
+		if (DBHelper.getDataFromDB(getBaseContext()).getCount() == 0){
+			cityThread  = new Thread() {
+				@Override
+				public void run(){
+					while (!isNetworkAvailable()){
+						try {
+							Thread.sleep(1000*60*15);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
+					Parser.parseCity(getBaseContext());
 				}
-				Parser.parseCity(getBaseContext());
-			}
-		}.start();
+			};
+			cityThread.setPriority(Thread.MIN_PRIORITY);
+			cityThread.start();
+		}
+		
 		w = new Weather();
 		timer = new Timer();
 		this.setPreferences();
