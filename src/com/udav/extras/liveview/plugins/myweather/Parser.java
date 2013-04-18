@@ -94,10 +94,11 @@ public class Parser {
 	public static Weather weatherParse(String cityID){
 		Weather w = new Weather();
 		NodeList nl = null;
-		try {
-			Document doc = loadData("http://export.yandex.ru/weather-ng/forecasts/"+cityID+".xml");
-			weatherData = doc;
-			
+		
+		Document doc = loadData("http://export.yandex.ru/weather-ng/forecasts/"+cityID+".xml");
+		weatherData = doc;
+		
+		if (doc != null) {	
 			nl = doc.getElementsByTagName("forecast").item(0).getChildNodes();
 			
 			w.setCity(((Element)doc.getElementsByTagName("forecast").item(0)).getAttribute("city"));
@@ -144,15 +145,12 @@ public class Parser {
 					}
 				}
 			}
-			
-		} catch (Exception e){
-			e.printStackTrace();
-		}
-		Date date = new Date();
-		int hours = date.getHours();
-		int min = date.getMinutes();
-		w.setUpdateTime(((hours<10)?"0"+hours:hours)+":"+((min<10)?"0"+min:min));
-		return w;
+			Date date = new Date();
+			int hours = date.getHours();
+			int min = date.getMinutes();
+			w.setUpdateTime(((hours<10)?"0"+hours:hours)+":"+((min<10)?"0"+min:min));
+			return w;
+		} else return null;
 	}
 	
 	
@@ -165,92 +163,94 @@ public class Parser {
 			doc = loadData("http://export.yandex.ru/weather-ng/forecasts/"+cityID+".xml");
 		}
 		
-		NodeList nl = doc.getElementsByTagName("forecast").item(0).getChildNodes();
-		for (int i=0; i<nl.getLength(); i++){
-			Node child = nl.item(i);
+		if (doc != null) { 
+			NodeList nl = doc.getElementsByTagName("forecast").item(0).getChildNodes();
+			for (int i=0; i<nl.getLength(); i++){
+				Node child = nl.item(i);
 			
-			if (child instanceof Element) {
-				if (child.getNodeName().equals("day")){
-					ForecastWeather temp = new ForecastWeather();
-					temp.setDate(((Element) child).getAttribute("date"));
+				if (child instanceof Element) {
+					if (child.getNodeName().equals("day")){
+						ForecastWeather temp = new ForecastWeather();
+						temp.setDate(((Element) child).getAttribute("date"));
 					
-					Node childOfChild = null;
-					for (int j=0; j<child.getChildNodes().getLength(); j++) {
-						childOfChild = child.getChildNodes().item(j);
-						if (childOfChild instanceof Element) {
-							//parse day forecast
-							if (childOfChild.getNodeName().equals("day_part") &&
-									((Element)childOfChild).getAttribute("typeid").equals("5")){
-								Node childOfChildOfChild = null;
-								for (int k=0; k<childOfChild.getChildNodes().getLength(); k++) {
-									childOfChildOfChild = childOfChild.getChildNodes().item(k);
-									if ("temperature".equals(childOfChildOfChild.getNodeName())) {
-										temp.setDayTemp(childOfChildOfChild.getTextContent());
-									} else
-									if ("weather_type_short".equals(childOfChildOfChild.getNodeName())){
-										temp.setDayWeatherType(childOfChildOfChild.getTextContent());
-									} else
-									if ("image".equals(childOfChildOfChild.getNodeName())){
-										String t = childOfChildOfChild.getTextContent();
-										if (t.charAt(0) == 'n')
-											temp.setDayImgID(Integer.parseInt(t.substring(1))+20);
-										else
-											temp.setDayImgID(Integer.parseInt(t));
-									} else
-									if ("humidity".equals(childOfChildOfChild.getNodeName())){
-										temp.setDayHumidity(childOfChildOfChild.getTextContent());
-									}else
-									if ("wind_direction".equals(childOfChildOfChild.getNodeName())){
-										temp.setDayWindDirection(childOfChildOfChild.getTextContent());
-									}else
-									if ("wind_speed".equals(childOfChildOfChild.getNodeName())) {
-										temp.setDayWindSpeed(childOfChildOfChild.getTextContent());
-									}else
-									if ("pressure".equals(childOfChildOfChild.getNodeName())){
-										temp.setDayPressure(childOfChildOfChild.getTextContent());
+						Node childOfChild = null;
+						for (int j=0; j<child.getChildNodes().getLength(); j++) {
+							childOfChild = child.getChildNodes().item(j);
+							if (childOfChild instanceof Element) {
+								//parse day forecast
+								if (childOfChild.getNodeName().equals("day_part") &&
+										((Element)childOfChild).getAttribute("typeid").equals("5")){
+									Node childOfChildOfChild = null;
+									for (int k=0; k<childOfChild.getChildNodes().getLength(); k++) {
+										childOfChildOfChild = childOfChild.getChildNodes().item(k);
+										if ("temperature".equals(childOfChildOfChild.getNodeName())) {
+											temp.setDayTemp(childOfChildOfChild.getTextContent());
+										} else
+										if ("weather_type_short".equals(childOfChildOfChild.getNodeName())){
+											temp.setDayWeatherType(childOfChildOfChild.getTextContent());
+										} else
+										if ("image".equals(childOfChildOfChild.getNodeName())){
+											String t = childOfChildOfChild.getTextContent();
+											if (t.charAt(0) == 'n')
+												temp.setDayImgID(Integer.parseInt(t.substring(1))+20);
+											else
+												temp.setDayImgID(Integer.parseInt(t));
+										} else
+										if ("humidity".equals(childOfChildOfChild.getNodeName())){
+											temp.setDayHumidity(childOfChildOfChild.getTextContent());
+										}else
+										if ("wind_direction".equals(childOfChildOfChild.getNodeName())){
+											temp.setDayWindDirection(childOfChildOfChild.getTextContent());
+										}else
+										if ("wind_speed".equals(childOfChildOfChild.getNodeName())) {
+											temp.setDayWindSpeed(childOfChildOfChild.getTextContent());
+										}else
+										if ("pressure".equals(childOfChildOfChild.getNodeName())){
+											temp.setDayPressure(childOfChildOfChild.getTextContent());
+										}
 									}
 								}
-							}
-							//parse night forecast
-							if (childOfChild.getNodeName().equals("day_part") &&
-									((Element)childOfChild).getAttribute("typeid").equals("6")){
-								Node childOfChildOfChild = null;
-								for (int k=0; k<childOfChild.getChildNodes().getLength(); k++) {
-									childOfChildOfChild = childOfChild.getChildNodes().item(k);
-									if ("temperature".equals(childOfChildOfChild.getNodeName())) {
-										temp.setNightTemp(childOfChildOfChild.getTextContent());
-									} else
-									if ("weather_type_short".equals(childOfChildOfChild.getNodeName())){
-										temp.setNightWeatherType(childOfChildOfChild.getTextContent());
-									} else
-									if ("image".equals(childOfChildOfChild.getNodeName())){
-										String t = childOfChildOfChild.getTextContent();
-										if (t.charAt(0) == 'n')
-											temp.setNightImgID(Integer.parseInt(t.substring(1))+20);
-										else
-											temp.setNightImgID(Integer.parseInt(t));
-									} else
-									if ("humidity".equals(childOfChildOfChild.getNodeName())){
-										temp.setNightHumidity(childOfChildOfChild.getTextContent());
-									}else
-									if ("wind_direction".equals(childOfChildOfChild.getNodeName())){
-										temp.setNightWindDirection(childOfChildOfChild.getTextContent());
-									}else
-									if ("wind_speed".equals(childOfChildOfChild.getNodeName())) {
-										temp.setNightWindSpeed(childOfChildOfChild.getTextContent());
-									}else
-									if ("pressure".equals(childOfChildOfChild.getNodeName())){
-										temp.setNightPressure(childOfChildOfChild.getTextContent());
+								//parse night forecast
+								if (childOfChild.getNodeName().equals("day_part") &&
+										((Element)childOfChild).getAttribute("typeid").equals("6")){
+									Node childOfChildOfChild = null;
+									for (int k=0; k<childOfChild.getChildNodes().getLength(); k++) {
+										childOfChildOfChild = childOfChild.getChildNodes().item(k);
+										if ("temperature".equals(childOfChildOfChild.getNodeName())) {
+											temp.setNightTemp(childOfChildOfChild.getTextContent());
+										} else
+										if ("weather_type_short".equals(childOfChildOfChild.getNodeName())){
+											temp.setNightWeatherType(childOfChildOfChild.getTextContent());
+										} else
+										if ("image".equals(childOfChildOfChild.getNodeName())){
+											String t = childOfChildOfChild.getTextContent();
+											if (t.charAt(0) == 'n')
+												temp.setNightImgID(Integer.parseInt(t.substring(1))+20);
+											else
+												temp.setNightImgID(Integer.parseInt(t));
+										} else
+										if ("humidity".equals(childOfChildOfChild.getNodeName())){
+											temp.setNightHumidity(childOfChildOfChild.getTextContent());
+										}else
+										if ("wind_direction".equals(childOfChildOfChild.getNodeName())){
+											temp.setNightWindDirection(childOfChildOfChild.getTextContent());
+										}else
+										if ("wind_speed".equals(childOfChildOfChild.getNodeName())) {
+											temp.setNightWindSpeed(childOfChildOfChild.getTextContent());
+										}else
+										if ("pressure".equals(childOfChildOfChild.getNodeName())){
+											temp.setNightPressure(childOfChildOfChild.getTextContent());
+										}
 									}
 								}
 							}
 						}
-					}
 					forecast.add(temp);
+					}
 				}
 			}
-		}
 		return forecast;	
+		} else return null;
 	}
 	
 }

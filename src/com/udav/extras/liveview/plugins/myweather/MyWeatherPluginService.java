@@ -33,8 +33,12 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			if (isNetworkAvailable()) {
 				//set city id // get it this http://weather.yandex.ru/static/cities.xml
 					long time = System.currentTimeMillis();
-					w = Parser.weatherParse(cityID);
-					forecast = Parser.parseForecast(cityID);
+					Weather tempWeather;
+					if ((tempWeather = Parser.weatherParse(cityID)) != null)
+							w = tempWeather;
+					ArrayList<ForecastWeather> forecastTemp;
+					if ((forecastTemp = Parser.parseForecast(cityID)) != null)
+						forecast = forecastTemp;
 					Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
 				} else {
 					Log.d(PluginConstants.LOG_TAG, "not internet connection!");
