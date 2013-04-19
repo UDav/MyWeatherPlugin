@@ -40,9 +40,9 @@ public class MyWeatherPluginService extends AbstractPluginService {
 					if ((forecastTemp = Parser.parseForecast(cityID)) != null)
 						forecast = forecastTemp;
 					Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
-				} else {
-					Log.d(PluginConstants.LOG_TAG, "not internet connection!");
-				}
+			} else {
+				Log.d(PluginConstants.LOG_TAG, "not internet connection!");
+			}
 			
 		}
 		
@@ -50,14 +50,30 @@ public class MyWeatherPluginService extends AbstractPluginService {
     
 	@Override
 	public void onStart(Intent intent, int startId) {
+		//android.os.Debug.waitForDebugger();
 		super.onStart(intent, startId);
-		System.out.println("I'm Started!");		
+		if (!isAlreadyRunning()) {
+			w = new Weather();
+			if (timer != null) timer.cancel();
+			timer = new Timer();
+			this.setPreferences();
+			updateInterval = Integer.parseInt(mSharedPreferences.getString("updateIntPref", "15"));
+			cityID = mSharedPreferences.getString("cityPref", "28698");
+			timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);
+			
+			// Singleton
+            alreadyRunning = true;
+		}
+		
+		
+		Log.d(PluginConstants.LOG_TAG, "I'm Start!");
+		
 	}
 	
 	@Override
 	public void onCreate() {
-		super.onCreate();
 		this.startForeground(123, new Notification());
+		super.onCreate();
 		Thread cityThread = null;
 		if (DBHelper.getDataFromDB(getBaseContext()).getCount() == 0){
 			cityThread  = new Thread() {
@@ -77,14 +93,13 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			cityThread.start();
 		}
 		
-		w = new Weather();
+		/*if (timer != null) timer.cancel();
 		timer = new Timer();
 		this.setPreferences();
 		updateInterval = Integer.parseInt(mSharedPreferences.getString("updateIntPref", "15"));
 		cityID = mSharedPreferences.getString("cityPref", "28698");
-		//timer.cancel();
-		timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);
-		System.out.println("I'm created!"); 
+		timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);*/
+		Log.d(PluginConstants.LOG_TAG, "I'm Created!");
 		
 	}
 	
@@ -109,14 +124,14 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		//show data
 		System.out.println(w.toString());
 		PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
-		System.out.println("I'm start work!");
+		Log.d(PluginConstants.LOG_TAG, "I'm start work!");
 	}
 	
 	/**
 	 * Must be implemented. Stops plugin work, if any.
 	 */
 	protected void stopWork() {
-		System.out.println("I'm stop work!"); 
+		Log.d(PluginConstants.LOG_TAG, "I,m stop work!");
 	}
 	
 	/**
@@ -155,7 +170,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		System.out.println("upd int "+updateInterval);
 		System.out.println("city "+cityID);
 		
-		timer.cancel();
+		if (timer != null) timer.cancel();
 		timer = new Timer();
 		timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);
 	}
@@ -216,7 +231,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
-			timer.cancel();
+			if (timer != null) timer.cancel();
 			timer = new Timer();
 			timer.scheduleAtFixedRate(new MyTimerTask(), 0, updateInterval*60*1000);
 			/*if (isNetworkAvailable()){

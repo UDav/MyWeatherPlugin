@@ -12,7 +12,7 @@ public class ForecastWeather {
 	private String dayPressure;
 	private String dayWindDirection;
 	private String dayWindSpeed;
-	private Bitmap dayBitmap;
+
 	//night data
 	private String nightTemp;
 	private String nightWeatherType;
@@ -21,7 +21,6 @@ public class ForecastWeather {
 	private String nightPressure;
 	private String nightWindDirection;
 	private String nightWindSpeed;
-	private Bitmap nightBitmap;
 	
 	public ForecastWeather(){
 		date="00:00";
@@ -91,12 +90,6 @@ public class ForecastWeather {
 	public void setDayWindSpeed(String dayWindSpeed) {
 		this.dayWindSpeed = dayWindSpeed;
 	}
-	public Bitmap getDayBitmap() {
-		return dayBitmap;
-	}
-	public void setDayBitmap(Bitmap dayBitmap) {
-		this.dayBitmap = dayBitmap;
-	}
 	public String getNightTemp() {
 		return nightTemp;
 	}
@@ -139,12 +132,7 @@ public class ForecastWeather {
 	public void setNightWindSpeed(String nightWindSpeed) {
 		this.nightWindSpeed = nightWindSpeed;
 	}
-	public Bitmap getNightBitmap() {
-		return nightBitmap;
-	}
-	public void setNightBitmap(Bitmap nightBitmap) {
-		this.nightBitmap = nightBitmap;
-	}
+	
 	@Override
 	public String toString() {
 		System.out.println("Date=" + date +" day temp="+ dayTemp + " night temp="+nightTemp);

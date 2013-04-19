@@ -13,7 +13,6 @@ public class Weather {
 	private String windDerection;
 	private String windSpeed;
 	private String updateTime;
-	private Bitmap pict;
 	private long time = 0;
 	
 	public Weather(){
@@ -25,7 +24,6 @@ public class Weather {
 		temperature = -999;
 		windDerection = "";
 		updateTime = "00:00";
-		pict = null;
 	}
 	
 	public String getCity() {
@@ -114,14 +112,6 @@ public class Weather {
 
 	public void setUpdateTime(String updateTime) {
 		this.updateTime = updateTime;
-	}
-
-	public Bitmap getPict() {
-		return pict;
-	}
-
-	public void setPict(Bitmap pict) {
-		this.pict = pict;
 	}
 
 	public long getTime() {
