@@ -10,7 +10,7 @@
     <string name="application_description">Extends:com.sonyericsson.extras.liveview</string>
     
     <!-- Current weather display -->
-	<string name="update">Обнавлено:</string>
+	<string name="update">Обновлено:</string>
 	<string name="wind">Ветер:</string>
 	
 	<!--  Weather forecast display-->
@@ -21,7 +21,7 @@
     
     <!-- Preferences -->
     <string name="upd_int_title">Интервал обновлений</string>
-    <string name="upd_int_sum">Введите интервал обнавления в минутах</string>
+    <string name="upd_int_sum">Введите интервал обновления в минутах</string>
     <string name="city">Город</string>
     <string name="city_sum">Выбирите ваш город</string>
 </resources>

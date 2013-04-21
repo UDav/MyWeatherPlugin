@@ -293,6 +293,9 @@ public abstract class AbstractPluginService extends Service {
 
             // Bind to LiveView
             connectToLiveView();
+            
+            // Singleton
+            alreadyRunning = true;
 
             
         }
