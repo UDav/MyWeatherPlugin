@@ -91,16 +91,23 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            @Override 
 	            public void onReceive( Context context, Intent intent){
 	            	if (isNetworkAvailable()) {
-						Log.d(PluginConstants.LOG_TAG, "Start timer!");
-					//set city id // get it this http://weather.yandex.ru/static/cities.xml
-						long time = System.currentTimeMillis();
-						Weather tempWeather;
-						if ((tempWeather = Parser.weatherParse(cityID)) != null)
-								w = tempWeather;
-						ArrayList<ForecastWeather> forecastTemp;
-						if ((forecastTemp = Parser.parseForecast(cityID)) != null)
-							forecast = forecastTemp;
-						Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
+	            		new Thread(){
+	            			@Override
+	            			public void run(){
+	            				Log.d(PluginConstants.LOG_TAG, "Start timer!");
+	            				//set city id // get it this http://weather.yandex.ru/static/cities.xml
+	            				long time = System.currentTimeMillis();
+	            				Weather tempWeather;
+	            				if ((tempWeather = Parser.weatherParse(cityID)) != null){
+	            					w = tempWeather;
+	            					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+	            				}
+	            				ArrayList<ForecastWeather> forecastTemp;
+	            				if ((forecastTemp = Parser.parseForecast(cityID)) != null)
+	            					forecast = forecastTemp;
+	            				Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
+	            			}
+	            		}.start();
 	            	} else {
 	            		Log.d(PluginConstants.LOG_TAG, "not internet connection!");
 	            	}
@@ -244,7 +251,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
 			setAlarm();
-			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+//			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}
 
