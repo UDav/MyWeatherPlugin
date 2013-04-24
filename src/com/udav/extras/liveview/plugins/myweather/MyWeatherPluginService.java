@@ -81,7 +81,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		}
 		
 		if (!isAlreadyRunning()) {
-			w = new Weather();
+			//w = new Weather();
 
 			this.setPreferences();
 			updateInterval = Integer.parseInt(mSharedPreferences.getString("updateIntPref", "15"));
@@ -89,7 +89,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			
 			BroadcastReceiver receiver = new BroadcastReceiver() {
 	            @Override 
-	            public void onReceive( Context context, Intent intent){
+	            public void onReceive(Context context, Intent intent){
 	            	if (isNetworkAvailable()) {
 	            		new Thread(){
 	            			@Override
@@ -97,7 +97,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            				Log.d(PluginConstants.LOG_TAG, "Start timer!");
 	            				//set city id // get it this http://weather.yandex.ru/static/cities.xml
 	            				long time = System.currentTimeMillis();
-	            				Weather tempWeather;
+	            				/*Weather tempWeather;
 	            				if ((tempWeather = Parser.weatherParse(cityID)) != null){
 	            					w = tempWeather;
 	            					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
@@ -105,6 +105,10 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            				ArrayList<ForecastWeather> forecastTemp;
 	            				if ((forecastTemp = Parser.parseForecast(cityID)) != null)
 	            					forecast = forecastTemp;
+	            				*/
+	            				w = Parser.weatherParse(cityID);
+	            				forecast = Parser.parseForecast(cityID);
+	            				if (w != null) PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 	            				Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
 	            			}
 	            		}.start();
@@ -114,9 +118,32 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            }
 	        };
 
-	        this.registerReceiver( receiver, new IntentFilter("com.udav.extras.liveview.plugins.myweather.update") );
-			
+	        this.registerReceiver(receiver, new IntentFilter("com.udav.extras.liveview.plugins.myweather.update") );
 			setAlarm();
+			
+			BroadcastReceiver internetBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+
+                    ConnectivityManager connectivity = (ConnectivityManager) context
+                            .getSystemService(Context.CONNECTIVITY_SERVICE);
+
+
+                        NetworkInfo[] info = connectivity.getAllNetworkInfo();
+                        
+                        //check wifi and gsm internet connection 
+                        if ((info[0].getState()==NetworkInfo.State.CONNECTED)||
+                        		info[1].getState()==NetworkInfo.State.CONNECTED){
+                        	if (updateState == false) setAlarm();
+                        } else
+                        	unsetAlarm();
+                    }
+
+                };
+
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+            this.registerReceiver(internetBroadcastReceiver, intentFilter);
 
 		}
 		
@@ -143,8 +170,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	 */
 	protected void startWork() {
 		//show data
-		System.out.println(w.toString());
-		PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+		//System.out.println(w.toString());
+		//PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		Log.d(PluginConstants.LOG_TAG, "I'm start work!");
 	}
 	
@@ -188,8 +215,6 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	protected void onSharedPreferenceChangedExtended(SharedPreferences prefs, String key) {
 		updateInterval = Integer.parseInt(prefs.getString("updateIntPref", "15"));
 		cityID = prefs.getString("cityPref", "28698");
-		System.out.println("upd int "+updateInterval);
-		System.out.println("city "+cityID);
 		
 		setAlarm();
 	}
@@ -284,11 +309,20 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	    return activeNetworkInfo != null;
 	}
     
+    private boolean updateState = false;
+    
     private void setAlarm(){
+    	updateState = true;
         PendingIntent pintent = PendingIntent.getBroadcast( this, 0, new Intent("com.udav.extras.liveview.plugins.myweather.update"), 0 );
         AlarmManager manager = (AlarmManager)(this.getSystemService( Context.ALARM_SERVICE ));
         manager.cancel(pintent);
         manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), updateInterval*60*1000, pintent);
+    }
+    private void unsetAlarm(){
+    	updateState = false;
+    	PendingIntent pintent = PendingIntent.getBroadcast( this, 0, new Intent("com.udav.extras.liveview.plugins.myweather.update"), 0 );
+        AlarmManager manager = (AlarmManager)(this.getSystemService( Context.ALARM_SERVICE ));
+        manager.cancel(pintent);
     }
 
     
