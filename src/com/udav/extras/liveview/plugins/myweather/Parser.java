@@ -153,6 +153,7 @@ public class Parser {
 		} else return null;
 	}
 	
+	public static ArrayList<WeatherNextHours> arrWeatherNextHours = new ArrayList<WeatherNextHours>();
 	
 	public static ArrayList<ForecastWeather> parseForecast(String cityID){
 		ArrayList<ForecastWeather> forecast = new ArrayList<ForecastWeather>();
@@ -172,7 +173,36 @@ public class Parser {
 					if (child.getNodeName().equals("day")){
 						ForecastWeather temp = new ForecastWeather();
 						temp.setDate(((Element) child).getAttribute("date"));
-					
+						
+						Date d = new Date();
+						if (temp.getDate().equals(d.getYear()+"-"+d.getMonth()+"-"+d.getDay())){
+							Node childOfChild = null;
+							for (int j=0; j<child.getChildNodes().getLength(); j++) {
+								childOfChild = child.getChildNodes().item(j);
+								if (childOfChild instanceof Element) {
+									//parse hours forecast
+									if (childOfChild.getNodeName().equals("hour")){
+										WeatherNextHours tmp = new WeatherNextHours();
+										tmp.setTime(((Element)childOfChild).getAttribute("at"));
+										System.out.println(((Element)childOfChild).getAttribute("at"));
+										Node childOfChildOfChild = null;
+										for (int k=0; k<childOfChild.getChildNodes().getLength(); k++) {
+											childOfChildOfChild = childOfChild.getChildNodes().item(k);
+											if ("temperature".equals(childOfChildOfChild.getNodeName())) {
+												System.out.println(childOfChildOfChild.getTextContent());
+												tmp.setTemperature(childOfChildOfChild.getTextContent())
+											} else
+											if ("image".equals(childOfChildOfChild.getNodeName())){
+												System.out.println(childOfChildOfChild.getTextContent());
+												tmp.setPictID(childOfChildOfChild.getTextContent());
+											}
+										}
+										arrWeatherNextHours.add(tmp);
+									}
+								}
+							}
+						}
+						
 						Node childOfChild = null;
 						for (int j=0; j<child.getChildNodes().getLength(); j++) {
 							childOfChild = child.getChildNodes().item(j);
