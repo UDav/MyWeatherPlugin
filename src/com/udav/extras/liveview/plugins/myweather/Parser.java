@@ -3,6 +3,7 @@ package com.udav.extras.liveview.plugins.myweather;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -153,7 +154,7 @@ public class Parser {
 		} else return null;
 	}
 	
-	public static ArrayList<WeatherNextHours> arrWeatherNextHours = new ArrayList<WeatherNextHours>();
+	public static ArrayList<WeatherNextHours> arrWeatherNextHours;// = new ArrayList<WeatherNextHours>();
 	
 	public static ArrayList<ForecastWeather> parseForecast(String cityID){
 		ArrayList<ForecastWeather> forecast = new ArrayList<ForecastWeather>();
@@ -175,7 +176,11 @@ public class Parser {
 						temp.setDate(((Element) child).getAttribute("date"));
 						
 						Date d = new Date();
-						if (temp.getDate().equals(d.getYear()+"-"+d.getMonth()+"-"+d.getDay())){
+						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+						String date = format.format(d);
+						
+						if (temp.getDate().equals(date)){
+							arrWeatherNextHours = new ArrayList<WeatherNextHours>();
 							Node childOfChild = null;
 							for (int j=0; j<child.getChildNodes().getLength(); j++) {
 								childOfChild = child.getChildNodes().item(j);
@@ -184,17 +189,19 @@ public class Parser {
 									if (childOfChild.getNodeName().equals("hour")){
 										WeatherNextHours tmp = new WeatherNextHours();
 										tmp.setTime(((Element)childOfChild).getAttribute("at"));
-										System.out.println(((Element)childOfChild).getAttribute("at"));
 										Node childOfChildOfChild = null;
 										for (int k=0; k<childOfChild.getChildNodes().getLength(); k++) {
 											childOfChildOfChild = childOfChild.getChildNodes().item(k);
 											if ("temperature".equals(childOfChildOfChild.getNodeName())) {
-												System.out.println(childOfChildOfChild.getTextContent());
-												tmp.setTemperature(childOfChildOfChild.getTextContent())
+												tmp.setTemperature(childOfChildOfChild.getTextContent());
 											} else
 											if ("image".equals(childOfChildOfChild.getNodeName())){
-												System.out.println(childOfChildOfChild.getTextContent());
-												tmp.setPictID(childOfChildOfChild.getTextContent());
+												String t = childOfChildOfChild.getTextContent();
+												if (t.charAt(0) == 'n')
+													tmp.setPictID(Integer.parseInt(t.substring(1))+20);
+												else
+													tmp.setPictID(Integer.parseInt(t));
+												
 											}
 										}
 										arrWeatherNextHours.add(tmp);

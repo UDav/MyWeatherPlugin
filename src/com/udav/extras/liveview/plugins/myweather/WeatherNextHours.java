@@ -3,7 +3,7 @@ package com.udav.extras.liveview.plugins.myweather;
 public class WeatherNextHours {
 	private String time;
 	private String temperature;
-	private String pictID;
+	private int pictID;
 	
 	public void setTime(String time) {
 		this.time = time;
@@ -19,10 +19,10 @@ public class WeatherNextHours {
 		return temperature;
 	}
 	
-	public void setPictID(String pictID) {
+	public void setPictID(int pictID) {
 		this.pictID = pictID;
 	}
-	public String getPictID(){
+	public int getPictID(){
 		return pictID;
 	}
 }

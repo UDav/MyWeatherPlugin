@@ -25,6 +25,7 @@ package com.udav.extras.liveview.plugins;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.drm.DrmErrorEvent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -40,8 +41,10 @@ import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import com.udav.extras.liveview.plugins.myweather.ForecastWeather;
+import com.udav.extras.liveview.plugins.myweather.Parser;
 import com.udav.extras.liveview.plugins.myweather.Weather;
 import com.udav.mymeatherplugin.R;
 
@@ -361,6 +364,54 @@ public final class PluginUtils {
         canvas.drawBitmap(pressurePict, middle+5, 
         		yNightPressure-pressurePict.getHeight(), paint);
         paint.setTextSize(fontSize);
+        
+        try{ 
+            liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);
+        } catch(Exception e) {
+            Log.d(PluginConstants.LOG_TAG, "Failed to send bitmap", e);
+        }
+    }
+    
+    public static void displayWeatherNextHours(Context context, LiveViewAdapter liveView, int pluginId){
+    	Bitmap bitmap = null;
+        try {
+            bitmap = Bitmap.createBitmap(PluginConstants.LIVEVIEW_SCREEN_X, 
+            		PluginConstants.LIVEVIEW_SCREEN_Y, Bitmap.Config.RGB_565);
+        }
+        catch(IllegalArgumentException  e) {
+            return;
+        }
+        Canvas canvas = new Canvas(bitmap);
+        
+        int size=0;
+        int index=0;
+        
+        Date date = new Date();
+        Log.d(PluginConstants.LOG_TAG, ""+date.getHours());
+        Log.d(PluginConstants.LOG_TAG, Parser.arrWeatherNextHours.get(index).getTime());
+        while(Integer.parseInt(Parser.arrWeatherNextHours.get(index).getTime()) <= date.getHours()) 
+        	index++;
+        
+        while (size+24<PluginConstants.LIVEVIEW_SCREEN_X) {
+        	//draw weather pict
+        	Bitmap pict = BitmapFactory.decodeResource(context.getResources(), 
+        			selectImage(Parser.arrWeatherNextHours.get(index).getPictID()));
+        	canvas.drawBitmap(pict, size, 20, new Paint());
+        	Paint paint = new Paint();
+        	paint.setColor(Color.WHITE);
+        	paint.setTextSize(10);
+        	// draw hour
+        	canvas.drawText(Parser.arrWeatherNextHours.get(index).getTime(), size, 20, paint);
+        	//draw temperature
+        	String temperature = Parser.arrWeatherNextHours.get(index).getTemperature()+DEGREES;
+        	Rect bounds = new Rect();
+        	paint.getTextBounds(temperature, 0, temperature.length(), bounds);
+        	canvas.drawText(temperature, size, 20+pict.getHeight()-bounds.top, paint);
+        	
+        	size += pict.getWidth();
+        	index++;
+        	if (index > 23) break;
+        }
         
         try{ 
             liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);
