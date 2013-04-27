@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.udav.extras.liveview.plugins;
+package com.udav.plugins;
 
 /**
  * Plugin common constants.

@@ -1,4 +1,4 @@
-package com.udav.extras.liveview.plugins.myweather;
+package com.udav.plugins.containers;
 
 import android.graphics.Bitmap;
 

@@ -7,33 +7,32 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:description="@string/application_description">
-        <service android:name="com.udav.extras.liveview.plugins.myweather.MyWeatherPluginService"
+        <service android:name="com.udav.plugins.myweather.MyWeatherPluginService"
 				 android:label="MyWeatherPlugin">
 			<intent-filter>
 				<action android:name="com.udav.extras.liveview.plugins.myweather.myweatherplugin"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
         </service>
-        <service android:name="com.udav.extras.liveview.plugins.myweather.WeatherProviderService"
+        <service android:name="com.udav.plugins.myweather.WeatherProviderService"
 				 android:label="WeatherProvider">
 			<intent-filter>
 				<action android:name="com.udav.extras.liveview.plugins.myweather.myweatherprovider"/>
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
         </service>
-        <activity android:name="com.udav.extras.liveview.plugins.PluginPreferences" 
+        <activity android:name="com.udav.plugins.PluginPreferences" 
 				  android:label="MyWeather Plugin preferences">
 			<intent-filter>
 				<action android:name="com.udav.extras.liveview.plugins.myweather.PREFERENCES"></action> 	
 				<category android:name="android.intent.category.DEFAULT"/>
 			</intent-filter>
         </activity>
-	    <receiver android:name="com.udav.extras.liveview.plugins.PluginReceiver">
+	    <receiver android:name="com.udav.plugins.PluginReceiver">
 			<intent-filter>
 				<action android:name="com.sonyericsson.extras.liveview.LAUNCH_PLUGIN" />
 			</intent-filter>
 	    </receiver>
-	    <receiver  android:process=":remote" android:name="Alarm"></receiver>
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-sdk android:minSdkVersion="4" />

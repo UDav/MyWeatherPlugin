@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.udav.extras.liveview.plugins;
+package com.udav.plugins;
 
 import com.sonyericsson.extras.liveview.IPluginServiceCallbackV1;
 import com.sonyericsson.extras.liveview.IPluginServiceV1;

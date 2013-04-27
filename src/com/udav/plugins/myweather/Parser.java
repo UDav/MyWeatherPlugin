@@ -1,4 +1,4 @@
-package com.udav.extras.liveview.plugins.myweather;
+package com.udav.plugins.myweather;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -15,7 +15,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.udav.extras.liveview.plugins.PluginConstants;
+import com.udav.plugins.PluginConstants;
+import com.udav.plugins.containers.DBHelper;
+import com.udav.plugins.containers.ForecastWeather;
+import com.udav.plugins.containers.Weather;
+import com.udav.plugins.containers.WeatherNextHours;
 
 import android.content.Context;
 import android.graphics.Bitmap;

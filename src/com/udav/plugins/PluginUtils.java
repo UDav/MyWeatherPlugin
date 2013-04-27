@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.udav.extras.liveview.plugins;
+package com.udav.plugins;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -43,10 +43,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
-import com.udav.extras.liveview.plugins.myweather.ForecastWeather;
-import com.udav.extras.liveview.plugins.myweather.Parser;
-import com.udav.extras.liveview.plugins.myweather.Weather;
 import com.udav.mymeatherplugin.R;
+import com.udav.plugins.containers.ForecastWeather;
+import com.udav.plugins.containers.Weather;
+import com.udav.plugins.myweather.Parser;
 
 /**
  * Utils.
@@ -389,28 +389,64 @@ public final class PluginUtils {
         Date date = new Date();
         Log.d(PluginConstants.LOG_TAG, ""+date.getHours());
         Log.d(PluginConstants.LOG_TAG, Parser.arrWeatherNextHours.get(index).getTime());
-        while(Integer.parseInt(Parser.arrWeatherNextHours.get(index).getTime()) <= date.getHours()) 
+        
+        // set index equal current time
+        while(Integer.parseInt(Parser.arrWeatherNextHours.get(index).getTime()) < date.getHours()) 
         	index++;
         
-        while (size+24<PluginConstants.LIVEVIEW_SCREEN_X) {
-        	//draw weather pict
+        Paint paint = new Paint();
+    	paint.setColor(Color.WHITE);
+    	paint.setTextSize(10);
+    	Rect bounds = new Rect();
+    	int bottom = 0;
+        
+    	//draw first line
+        while (index < 24) {
         	Bitmap pict = BitmapFactory.decodeResource(context.getResources(), 
-        			selectImage(Parser.arrWeatherNextHours.get(index).getPictID()));
-        	canvas.drawBitmap(pict, size, 20, new Paint());
-        	Paint paint = new Paint();
-        	paint.setColor(Color.WHITE);
-        	paint.setTextSize(10);
+        			selectImage(Parser.arrWeatherNextHours.get(index).getPictID()));	
+        	if ((size + pict.getWidth()) > PluginConstants.LIVEVIEW_SCREEN_X) break;
         	// draw hour
-        	canvas.drawText(Parser.arrWeatherNextHours.get(index).getTime(), size, 20, paint);
+        	String hour = Parser.arrWeatherNextHours.get(index).getTime();
+        	paint.getTextBounds(hour, 0, hour.length(), bounds);
+        	int yHour = 0-bounds.top + 5;
+        	int xCenter = size+((pict.getWidth()-bounds.right)/2);
+        	canvas.drawText(hour, xCenter, yHour, paint);
+        	//draw weather pict
+        	canvas.drawBitmap(pict, size, yHour, new Paint());
         	//draw temperature
         	String temperature = Parser.arrWeatherNextHours.get(index).getTemperature()+DEGREES;
-        	Rect bounds = new Rect();
         	paint.getTextBounds(temperature, 0, temperature.length(), bounds);
-        	canvas.drawText(temperature, size, 20+pict.getHeight()-bounds.top, paint);
+        	bottom = yHour + pict.getHeight() - bounds.top;
+        	xCenter = size+((pict.getWidth()-bounds.right)/2);
+        	canvas.drawText(temperature, xCenter, bottom, paint);
         	
-        	size += pict.getWidth();
+        	size += pict.getWidth() + 5;
         	index++;
-        	if (index > 23) break;
+        }
+        canvas.drawLine(0, bottom+=5, PluginConstants.LIVEVIEW_SCREEN_X, bottom, paint);
+        
+        //draw second line
+        size = 0;
+        while (index < 24) {
+        	Bitmap pict = BitmapFactory.decodeResource(context.getResources(), 
+        			selectImage(Parser.arrWeatherNextHours.get(index).getPictID()));
+        	if ((size + pict.getWidth()) > PluginConstants.LIVEVIEW_SCREEN_X) break;
+        	// draw hour
+        	String hour = Parser.arrWeatherNextHours.get(index).getTime();
+        	paint.getTextBounds(hour, 0, hour.length(), bounds);
+        	int yHour = bottom - bounds.top + 5;
+        	int xCenter = size + ((pict.getWidth()-bounds.right)/2);
+        	canvas.drawText(hour, xCenter, yHour, paint);
+        	//draw weather pict
+        	canvas.drawBitmap(pict, size, yHour, new Paint());
+        	//draw temperature
+        	String temperature = Parser.arrWeatherNextHours.get(index).getTemperature()+DEGREES;
+        	paint.getTextBounds(temperature, 0, temperature.length(), bounds);
+        	xCenter = size + ((pict.getWidth()-bounds.right)/2);
+        	canvas.drawText(temperature, xCenter, yHour +pict.getHeight()-bounds.top, paint);
+        	
+        	size += pict.getWidth() + 5;
+        	index++;
         }
         
         try{ 

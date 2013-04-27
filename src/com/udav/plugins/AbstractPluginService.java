@@ -21,7 +21,7 @@
  * THE SOFTWARE.
  */
 
-package com.udav.extras.liveview.plugins;
+package com.udav.plugins;
 
 import com.sonyericsson.extras.liveview.IPluginServiceCallbackV1;
 import com.sonyericsson.extras.liveview.IPluginServiceV1;
@@ -252,7 +252,7 @@ public abstract class AbstractPluginService extends Service {
         Log.d(PluginConstants.LOG_TAG, "Enter AbstractPluginService.onCreate.");
 
         // Load menu icon
-        int iconId = PluginUtils.getDynamicResourceId(this, "weather", "drawable");
+        int iconId = PluginUtils.getDynamicResourceId(this, "icon", "drawable");
         mMenuIcon = PluginUtils.storeIconToFile(this, getResources(), iconId, TEMPLATE_MENU_ICON);
     }
 

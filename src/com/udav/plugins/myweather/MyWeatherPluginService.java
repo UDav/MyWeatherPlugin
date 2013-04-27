@@ -1,12 +1,15 @@
-package com.udav.extras.liveview.plugins.myweather;
+package com.udav.plugins.myweather;
 
 import java.util.ArrayList;
 import java.util.Timer;
 
-import com.udav.extras.liveview.plugins.AbstractPluginService;
-import com.udav.extras.liveview.plugins.PluginConstants;
-import com.udav.extras.liveview.plugins.PluginUtils;
 import com.udav.mymeatherplugin.R;
+import com.udav.plugins.AbstractPluginService;
+import com.udav.plugins.PluginConstants;
+import com.udav.plugins.PluginUtils;
+import com.udav.plugins.containers.DBHelper;
+import com.udav.plugins.containers.ForecastWeather;
+import com.udav.plugins.containers.Weather;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -25,11 +28,12 @@ import android.util.Log;
 
 public class MyWeatherPluginService extends AbstractPluginService {
 	private Weather w;
-	private Timer timer;
 	private int updateInterval;
 	private String cityID;
 	private int index = -1;
+	private int vIndex = 0;
 	private ArrayList<ForecastWeather> forecast;
+	private boolean update = true;
     
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -86,6 +90,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			this.setPreferences();
 			updateInterval = Integer.parseInt(mSharedPreferences.getString("updateIntPref", "15"));
 			cityID = mSharedPreferences.getString("cityPref", "28698");
+			update = mSharedPreferences.getBoolean("weatherRefresh", true);
 			
 			BroadcastReceiver receiver = new BroadcastReceiver() {
 	            @Override 
@@ -97,18 +102,12 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            				Log.d(PluginConstants.LOG_TAG, "Start timer!");
 	            				//set city id // get it this http://weather.yandex.ru/static/cities.xml
 	            				long time = System.currentTimeMillis();
-	            				/*Weather tempWeather;
-	            				if ((tempWeather = Parser.weatherParse(cityID)) != null){
-	            					w = tempWeather;
-	            					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
-	            				}
-	            				ArrayList<ForecastWeather> forecastTemp;
-	            				if ((forecastTemp = Parser.parseForecast(cityID)) != null)
-	            					forecast = forecastTemp;
-	            				*/
 	            				w = Parser.weatherParse(cityID);
 	            				forecast = Parser.parseForecast(cityID);
-	            				if (w != null) PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+	            				if (w != null) {
+	            					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+	            					index = -1; vIndex = 0;
+	            				}
 	            				Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
 	            			}
 	            		}.start();
@@ -118,8 +117,13 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            }
 	        };
 
-	        this.registerReceiver(receiver, new IntentFilter("com.udav.extras.liveview.plugins.myweather.update") );
-			setAlarm();
+	        this.registerReceiver(receiver, new IntentFilter("com.udav.plugins.myweather.update") );
+	        if (update) {
+				setAlarm();
+			} else {
+				unsetAlarm();
+				update();
+			}
 			
 			BroadcastReceiver internetBroadcastReceiver = new BroadcastReceiver() {
                 @Override
@@ -172,6 +176,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		//show data
 		//System.out.println(w.toString());
 		PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+		index = -1;
+		vIndex = 0;
 		Log.d(PluginConstants.LOG_TAG, "I'm start work!");
 	}
 	
@@ -215,8 +221,14 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	protected void onSharedPreferenceChangedExtended(SharedPreferences prefs, String key) {
 		updateInterval = Integer.parseInt(prefs.getString("updateIntPref", "15"));
 		cityID = prefs.getString("cityPref", "28698");
+		update = prefs.getBoolean("weatherRefresh", true);
 		
-		setAlarm();
+		if (update) {
+			setAlarm();
+		} else {
+			unsetAlarm();
+			update();
+		}
 	}
 
 	@Override
@@ -242,18 +254,23 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		    if(longpress) {
 		        //mLiveViewAdapter.ledControl(mPluginId, 50, 50, 50);
 		    } else {
+		    	if ((vIndex == 1) && (index == -1)) {
+		    		PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+		    		vIndex = 0;
+		    	}
 		    }
 		} else if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_DOWN)) {
             if(longpress) {
                 //mLiveViewAdapter.vibrateControl(mPluginId, 50, 50);
             } else {
-            	if (Parser.arrWeatherNextHours != null) {
+            	if ((vIndex == 0) && (Parser.arrWeatherNextHours != null) && (index == -1)) {
             		PluginUtils.displayWeatherNextHours(getBaseContext(), mLiveViewAdapter, mPluginId);
+            		vIndex = 1;
             	}
             }
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_RIGHT)) {
-			if (forecast != null) {
+			if ((forecast != null) && (vIndex == 0)) {
 				index++;
 				if (index >= forecast.size()) {
 					index = -1;
@@ -263,7 +280,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			}
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_LEFT)) {
-			if (forecast != null) {
+			if ((forecast != null) && (vIndex == 0)) {
 				index--;
 				if (index == -1) {
 					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
@@ -277,7 +294,12 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_SELECT)) {
-			setAlarm();
+			if (update) {
+				setAlarm();
+			} else {
+				unsetAlarm();
+				update();
+			}
 //			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}
@@ -315,16 +337,19 @@ public class MyWeatherPluginService extends AbstractPluginService {
     
     private void setAlarm(){
     	updateState = true;
-        PendingIntent pintent = PendingIntent.getBroadcast( this, 0, new Intent("com.udav.extras.liveview.plugins.myweather.update"), 0 );
+        PendingIntent pintent = PendingIntent.getBroadcast( this, 0, new Intent("com.udav.plugins.myweather.update"), 0 );
         AlarmManager manager = (AlarmManager)(this.getSystemService( Context.ALARM_SERVICE ));
         manager.cancel(pintent);
         manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), updateInterval*60*1000, pintent);
     }
     private void unsetAlarm(){
     	updateState = false;
-    	PendingIntent pintent = PendingIntent.getBroadcast( this, 0, new Intent("com.udav.extras.liveview.plugins.myweather.update"), 0 );
+    	PendingIntent pintent = PendingIntent.getBroadcast( this, 0, new Intent("com.udav.plugins.myweather.update"), 0 );
         AlarmManager manager = (AlarmManager)(this.getSystemService( Context.ALARM_SERVICE ));
         manager.cancel(pintent);
+    }
+    private void update() {
+    	sendBroadcast(new Intent("com.udav.plugins.myweather.update"));
     }
 
     
