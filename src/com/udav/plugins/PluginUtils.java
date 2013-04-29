@@ -401,7 +401,7 @@ public final class PluginUtils {
     	int bottom = 0;
         
     	//draw first line
-        while (index < 24) {
+        while (index < Parser.arrWeatherNextHours.size()) {
         	Bitmap pict = BitmapFactory.decodeResource(context.getResources(), 
         			selectImage(Parser.arrWeatherNextHours.get(index).getPictID()));	
         	if ((size + pict.getWidth()) > PluginConstants.LIVEVIEW_SCREEN_X) break;
@@ -427,7 +427,7 @@ public final class PluginUtils {
         
         //draw second line
         size = 0;
-        while (index < 24) {
+        while (index < Parser.arrWeatherNextHours.size()) {
         	Bitmap pict = BitmapFactory.decodeResource(context.getResources(), 
         			selectImage(Parser.arrWeatherNextHours.get(index).getPictID()));
         	if ((size + pict.getWidth()) > PluginConstants.LIVEVIEW_SCREEN_X) break;

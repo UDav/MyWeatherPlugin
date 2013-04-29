@@ -1,9 +1,7 @@
 package com.udav.plugins.myweather;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
-import com.udav.mymeatherplugin.R;
 import com.udav.plugins.AbstractPluginService;
 import com.udav.plugins.PluginConstants;
 import com.udav.plugins.PluginUtils;
@@ -12,7 +10,6 @@ import com.udav.plugins.containers.ForecastWeather;
 import com.udav.plugins.containers.Weather;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -90,7 +87,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			this.setPreferences();
 			updateInterval = Integer.parseInt(mSharedPreferences.getString("updateIntPref", "15"));
 			cityID = mSharedPreferences.getString("cityPref", "28698");
-			update = mSharedPreferences.getBoolean("weatherRefresh", true);
+			update = mSharedPreferences.getBoolean("weatherUpdate", true);
 			
 			BroadcastReceiver receiver = new BroadcastReceiver() {
 	            @Override 
@@ -224,7 +221,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	protected void onSharedPreferenceChangedExtended(SharedPreferences prefs, String key) {
 		updateInterval = Integer.parseInt(prefs.getString("updateIntPref", "15"));
 		cityID = prefs.getString("cityPref", "28698");
-		update = prefs.getBoolean("weatherRefresh", true);
+		update = prefs.getBoolean("weatherUpdate", true);
 		
 		if (update) {
 			setAlarm();

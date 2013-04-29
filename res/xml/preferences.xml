@@ -1,8 +1,9 @@
 <PreferenceScreen	xmlns:android="http://schemas.android.com/apk/res/android"	
 					android:title="@string/pluginname">
 	<CheckBoxPreference 
-	    android:key="weatherRefresh"
-	    android:title="Refresh"
+	    android:key="weatherUpdate"
+	    android:title="@string/update_weather"
+	    android:summary="@string/update_weather_sum"
 	    android:order = "0"
 	    android:defaultValue = "true"/>
 	<EditTextPreference

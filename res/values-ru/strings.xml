@@ -20,6 +20,8 @@
 	<string name="windSpeed">м/с</string>
     
     <!-- Preferences -->
+    <string name="update_weather">Обновлять</string>
+    <string name="update_weather_sum">Обновлять погоду автоматически</string>
     <string name="upd_int_title">Интервал обновлений</string>
     <string name="upd_int_sum">Введите интервал обновления в минутах</string>
     <string name="city">Город</string>

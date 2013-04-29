@@ -5,6 +5,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -162,6 +163,8 @@ public class Parser {
 	
 	public static ArrayList<ForecastWeather> parseForecast(String cityID){
 		ArrayList<ForecastWeather> forecast = new ArrayList<ForecastWeather>();
+		arrWeatherNextHours = new ArrayList<WeatherNextHours>();
+		
 		Document doc = null;
 		if (weatherData != null) {
 			doc = weatherData;
@@ -179,12 +182,14 @@ public class Parser {
 						ForecastWeather temp = new ForecastWeather();
 						temp.setDate(((Element) child).getAttribute("date"));
 						
-						Date d = new Date();
 						SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-						String date = format.format(d);
+						Calendar calendar = Calendar.getInstance();
+						calendar.setTime(new Date());
+						String currentDate = format.format(calendar.getTime());
+						calendar.add(Calendar.DATE, 1);
+						String nextDate = format.format(calendar.getTime());
 						
-						if (temp.getDate().equals(date)){
-							arrWeatherNextHours = new ArrayList<WeatherNextHours>();
+						if ((temp.getDate().equals(currentDate)) || (temp.getDate().equals(nextDate))){
 							Node childOfChild = null;
 							for (int j=0; j<child.getChildNodes().getLength(); j++) {
 								childOfChild = child.getChildNodes().item(j);
@@ -213,6 +218,10 @@ public class Parser {
 								}
 							}
 						}
+						
+						System.out.println(arrWeatherNextHours.size());
+						for (int q=0; q<arrWeatherNextHours.size(); q++)
+							System.out.println(arrWeatherNextHours.get(q).getTime());
 						
 						Node childOfChild = null;
 						for (int j=0; j<child.getChildNodes().getLength(); j++) {
@@ -290,6 +299,7 @@ public class Parser {
 					}
 				}
 			}
+		//	arrWeatherNextHours.remove(25); // delete duplicate hour 0
 		return forecast;	
 		} else return null;
 	}

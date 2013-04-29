@@ -20,6 +20,8 @@
 	<string name="windSpeed">m/s</string>
     
     <!-- Preferences -->
+    <string name="update_weather">Update</string>
+    <string name="update_weather_sum">update weather</string>
     <string name="upd_int_title">Update interval</string>
     <string name="upd_int_sum">Input interval in minutes</string>
     <string name="city">City</string>
