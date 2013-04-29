@@ -456,6 +456,31 @@ public final class PluginUtils {
         }
     }
     
+    public static void displayNotConnection(LiveViewAdapter liveView, int pluginId) {
+    	Bitmap bitmap = null;
+        try {
+            bitmap = Bitmap.createBitmap(PluginConstants.LIVEVIEW_SCREEN_X, 
+            		PluginConstants.LIVEVIEW_SCREEN_Y, Bitmap.Config.RGB_565);
+        }
+        catch(IllegalArgumentException  e) {
+            return;
+        }
+        
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        Rect bounds = new Rect();
+        paint.setColor(Color.WHITE);
+        String text = "Not Connection!!!";
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        canvas.drawText(text, (128-bounds.right)/2, (128+bounds.top)/2, paint);
+        
+        try{ 
+            liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);
+        } catch(Exception e) {
+            Log.d(PluginConstants.LOG_TAG, "Failed to send bitmap", e);
+        }
+    }
+    
     /**
      * Gets resource id dynamically
      * 

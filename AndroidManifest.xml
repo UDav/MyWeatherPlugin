@@ -14,13 +14,6 @@
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
         </service>
-        <service android:name="com.udav.plugins.myweather.WeatherProviderService"
-				 android:label="WeatherProvider">
-			<intent-filter>
-				<action android:name="com.udav.extras.liveview.plugins.myweather.myweatherprovider"/>
-				<category android:name="android.intent.category.LAUNCHER"/>
-			</intent-filter>
-        </service>
         <activity android:name="com.udav.plugins.PluginPreferences" 
 				  android:label="MyWeather Plugin preferences">
 			<intent-filter>

@@ -175,7 +175,10 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	protected void startWork() {
 		//show data
 		//System.out.println(w.toString());
-		PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+		if (w != null)
+			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+		else
+			PluginUtils.displayNotConnection(mLiveViewAdapter, mPluginId);
 		index = -1;
 		vIndex = 0;
 		Log.d(PluginConstants.LOG_TAG, "I'm start work!");
@@ -254,7 +257,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		    if(longpress) {
 		        //mLiveViewAdapter.ledControl(mPluginId, 50, 50, 50);
 		    } else {
-		    	if ((vIndex == 1) && (index == -1)) {
+		    	if ((vIndex == 1) && (index == -1) && (w != null)) {
 		    		PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		    		vIndex = 0;
 		    	}
