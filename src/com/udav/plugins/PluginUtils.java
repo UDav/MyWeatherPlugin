@@ -210,15 +210,35 @@ public final class PluginUtils {
         String weatherType = w.getWeatherType();
         paint.getTextBounds(weatherType, 0, weatherType.length(), bounds);
         
+        int y = 85;
         Bitmap pict = BitmapFactory.decodeResource(context.getResources(), selectImage(w.getImgID()));
         if (pict != null) {
-        	int x = (PluginConstants.LIVEVIEW_SCREEN_X-(pict.getWidth()+bounds.right))/2;
-        	canvas.drawBitmap(pict, x, 85-pict.getHeight(), paint);
-        	canvas.drawText(w.getWeatherType(), x+pict.getWidth(), 85, paint);
+        	if (bounds.right+pict.getWidth() > PluginConstants.LIVEVIEW_SCREEN_X){
+        		int x = (PluginConstants.LIVEVIEW_SCREEN_X-pict.getWidth())/2;
+        		canvas.drawBitmap(pict, x, y-pict.getHeight(), paint);
+        		x = (PluginConstants.LIVEVIEW_SCREEN_X-bounds.right)/2;
+        		y = y - bounds.top + 5;
+        		canvas.drawText(w.getWeatherType(), x, y, paint);
+        	} else {
+        		int x = (PluginConstants.LIVEVIEW_SCREEN_X-(pict.getWidth()+bounds.right))/2;
+        		canvas.drawBitmap(pict, x, y-pict.getHeight(), paint);
+        		canvas.drawText(w.getWeatherType(), x+pict.getWidth(), y, paint);
+        	}
         }
         
-        //draw humidity
+        //draw wind
         paint.setTextSize(10);
+        String wind = w.getWindDerection() + " " + w.getWindSpeed() + context.getString(R.string.windSpeed);
+        Bitmap windPict = BitmapFactory.decodeResource(context.getResources(), R.drawable.wind);
+        paint.getTextBounds(wind, 0, wind.length(), bounds);
+        int xWind = (PluginConstants.LIVEVIEW_SCREEN_X-(windPict.getWidth()+bounds.right))/2;
+        y = y + 5;
+        canvas.drawBitmap(windPict, xWind, y, paint);
+        y = y + windPict.getHeight();
+        canvas.drawText(wind, xWind+windPict.getWidth()+5, y, paint);
+        
+        
+        //draw humidity
         String humidity = w.getHumidity()+"%";
         Bitmap humidityPict = BitmapFactory.decodeResource(context.getResources(), R.drawable.humidity);
         paint.getTextBounds(humidity, 0, humidity.length(), bounds);
@@ -233,14 +253,6 @@ public final class PluginUtils {
         		PluginConstants.LIVEVIEW_SCREEN_Y, paint);
         canvas.drawBitmap(pressurePict, PluginConstants.LIVEVIEW_SCREEN_X-pressurePict.getWidth()-bounds.right-5, 
         		PluginConstants.LIVEVIEW_SCREEN_Y - pressurePict.getHeight(), paint);
-        
-        //draw wind
-        String wind = w.getWindDerection() + " " + w.getWindSpeed() + context.getString(R.string.windSpeed);
-        Bitmap windPict = BitmapFactory.decodeResource(context.getResources(), R.drawable.wind);
-        paint.getTextBounds(wind, 0, wind.length(), bounds);
-        int xWind = (PluginConstants.LIVEVIEW_SCREEN_X-(windPict.getWidth()+bounds.right))/2;
-        canvas.drawText(wind, xWind+windPict.getWidth()+5, 100, paint);
-        canvas.drawBitmap(windPict, xWind, 90, paint);
         
         try{ 
             liveView.sendImageAsBitmap(pluginId, centerX(bitmap), centerY(bitmap), bitmap);
@@ -470,7 +482,7 @@ public final class PluginUtils {
         Paint paint = new Paint();
         Rect bounds = new Rect();
         paint.setColor(Color.WHITE);
-        String text = "Not Connection!!!";
+        String text = "No data! Wait!";
         paint.getTextBounds(text, 0, text.length(), bounds);
         canvas.drawText(text, (128-bounds.right)/2, (128+bounds.top)/2, paint);
         

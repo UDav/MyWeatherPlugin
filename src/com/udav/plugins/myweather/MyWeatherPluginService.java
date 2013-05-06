@@ -61,25 +61,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		notice.setLatestEventInfo(this, "WeatherPlugin", "Settings plugin", pendIntent);
 		notice.flags = Notification.FLAG_NO_CLEAR;
 		this.startForeground(1337, notice);*/
-		
-		Thread cityThread = null;
-		if (DBHelper.getDataFromDB(getBaseContext()).getCount() == 0){
-			cityThread  = new Thread() {
-				@Override
-				public void run(){
-					while (!isNetworkAvailable()){
-						try {
-							Thread.sleep(1000*60*15);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					Parser.parseCity(getBaseContext());
-				}
-			};
-			cityThread.setPriority(Thread.MIN_PRIORITY);
-			cityThread.start();
-		}
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		
 		if (!isAlreadyRunning()) {
 			//w = new Weather();
@@ -93,7 +75,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            @Override 
 	            public void onReceive(Context context, Intent intent){
 	            	if (isNetworkAvailable()) {
-	            		new Thread(){
+	            		Thread parseThread = new Thread(){
 	            			@Override
 	            			public void run(){
 	            				Log.d(PluginConstants.LOG_TAG, "Start timer!");
@@ -107,7 +89,9 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            				}
 	            				Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
 	            			}
-	            		}.start();
+	            		};
+	            		parseThread.setPriority(Thread.MIN_PRIORITY);
+	            		parseThread.start();
 	            	} else {
 	            		Log.d(PluginConstants.LOG_TAG, "not internet connection!");
 	            	}
@@ -146,6 +130,25 @@ public class MyWeatherPluginService extends AbstractPluginService {
             intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
             this.registerReceiver(internetBroadcastReceiver, intentFilter);
 
+		}
+		
+		Thread cityThread = null;
+		if (DBHelper.getDataFromDB(getBaseContext()).getCount() == 0){
+			cityThread  = new Thread() {
+				@Override
+				public void run(){
+					while (!isNetworkAvailable()){
+						try {
+							Thread.sleep(1000*60*15);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					Parser.parseCity(getBaseContext());
+				}
+			};
+			cityThread.setPriority(Thread.MIN_PRIORITY);
+			cityThread.start();
 		}
 		
 		Log.d(PluginConstants.LOG_TAG, "I'm Created!");
@@ -275,8 +278,9 @@ public class MyWeatherPluginService extends AbstractPluginService {
 				if (index >= forecast.size()) {
 					index = -1;
 					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
-				} else
+				} else {
 					PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, forecast.get(index), 14);
+				}
 			}
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_LEFT)) {
@@ -300,7 +304,6 @@ public class MyWeatherPluginService extends AbstractPluginService {
 				unsetAlarm();
 				update();
 			}
-//			PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 		}
 	}
 

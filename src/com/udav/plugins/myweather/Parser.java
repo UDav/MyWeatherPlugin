@@ -219,9 +219,6 @@ public class Parser {
 							}
 						}
 						
-						System.out.println(arrWeatherNextHours.size());
-						for (int q=0; q<arrWeatherNextHours.size(); q++)
-							System.out.println(arrWeatherNextHours.get(q).getTime());
 						
 						Node childOfChild = null;
 						for (int j=0; j<child.getChildNodes().getLength(); j++) {
