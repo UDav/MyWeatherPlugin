@@ -26,4 +26,6 @@
     <string name="upd_int_sum">Input interval in minutes</string>
     <string name="city">City</string>
     <string name="city_sum">Select your city</string>
+    <string name="number_of_days">Number of days</string>
+    <string name="number_of_days_sum">Choose to display how many days weather forecast</string>
 </resources>

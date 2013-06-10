@@ -26,4 +26,6 @@
     <string name="upd_int_sum">Введите интервал обновления в минутах</string>
     <string name="city">Город</string>
     <string name="city_sum">Выбирите ваш город</string>
+    <string name="number_of_days">Количество дней</string>
+    <string name="number_of_days_sum">Выберите на сколько дней отображать прогноз погоды</string>
 </resources>

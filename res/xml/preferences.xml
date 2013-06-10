@@ -14,7 +14,13 @@
 	    android:defaultValue="15"
 	    android:order="1"
 	/>
-<!--
-		Add your additional preferences here.
-	-->
+	<ListPreference
+	    android:key="numberOfDays"
+	    android:title="@string/number_of_days"
+	    android:summary="@string/number_of_days_sum"
+	    android:entries="@array/listArray"
+	    android:entryValues="@array/listArray"
+	    android:defaultValue="7"
+	    android:order="3"
+	/>
 </PreferenceScreen>

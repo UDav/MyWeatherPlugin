@@ -31,6 +31,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	private int vIndex = 0;
 	private ArrayList<ForecastWeather> forecast;
 	private boolean update = true;
+	private boolean changeData = false;
+	private int numberOfDays;
     
 	@Override
 	public void onStart(Intent intent, int startId) {
@@ -70,6 +72,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			updateInterval = Integer.parseInt(mSharedPreferences.getString("updateIntPref", "15"));
 			cityID = mSharedPreferences.getString("cityPref", "28698");
 			update = mSharedPreferences.getBoolean("weatherUpdate", true);
+			numberOfDays = Integer.parseInt(mSharedPreferences.getString("numberOfDays", "7"));
 			
 			BroadcastReceiver receiver = new BroadcastReceiver() {
 	            @Override 
@@ -83,10 +86,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            				long time = System.currentTimeMillis();
 	            				w = Parser.weatherParse(cityID);
 	            				forecast = Parser.parseForecast(cityID);
-	            				if (w != null) {
-	            					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
-	            					index = -1; vIndex = 0;
-	            				}
+	            				changeData = true;
 	            				Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
 	            			}
 	            		};
@@ -181,6 +181,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			PluginUtils.displayNotConnection(mLiveViewAdapter, mPluginId);
 		index = -1;
 		vIndex = 0;
+		changeData = false;
 		Log.d(PluginConstants.LOG_TAG, "I'm start work!");
 	}
 	
@@ -225,6 +226,7 @@ public class MyWeatherPluginService extends AbstractPluginService {
 		updateInterval = Integer.parseInt(prefs.getString("updateIntPref", "15"));
 		cityID = prefs.getString("cityPref", "28698");
 		update = prefs.getBoolean("weatherUpdate", true);
+		numberOfDays = Integer.parseInt(mSharedPreferences.getString("numberOfDays", "7"));
 		
 		if (update) {
 			setAlarm();
@@ -273,9 +275,11 @@ public class MyWeatherPluginService extends AbstractPluginService {
             }
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_RIGHT)) {
+			if (forecast.size() < numberOfDays) numberOfDays = forecast.size();
+			
 			if ((forecast != null) && (vIndex == 0)) {
 				index++;
-				if (index >= forecast.size()) {
+				if (index >= numberOfDays) {
 					index = -1;
 					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 				} else {
@@ -284,13 +288,15 @@ public class MyWeatherPluginService extends AbstractPluginService {
 			}
 		} else 
 		if(buttonType.equalsIgnoreCase(PluginConstants.BUTTON_LEFT)) {
+			if (forecast.size() < numberOfDays) numberOfDays = forecast.size();
+			
 			if ((forecast != null) && (vIndex == 0)) {
 				index--;
 				if (index == -1) {
 					PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
 				} else {
 					if (index < -1) {
-						index = forecast.size()-1;
+						index = numberOfDays-1;
 					}
 					PluginUtils.displayForecastWeather(getBaseContext(), mLiveViewAdapter, mPluginId, forecast.get(index), 14);
 				}
@@ -324,6 +330,13 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	 */
     protected void screenMode(int mode) {
         Log.d(PluginConstants.LOG_TAG, "screenMode: screen is now " + ((mode == 0) ? "OFF" : "ON"));
+        if ((mode == 1) && (changeData)) {
+        	if (w != null) {
+				PluginUtils.displayWeather(getBaseContext(), mLiveViewAdapter, mPluginId, w, 14);
+				index = -1; vIndex = 0;
+				changeData = false;
+			}
+        }
     }
     
     /**
