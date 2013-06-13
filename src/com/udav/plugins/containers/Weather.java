@@ -10,7 +10,7 @@ public class Weather {
 	private String pressure;
 	private String tommorow = "0", tommorowNight = "0";
 	private int temperature;
-	private String windDerection;
+	private String windDirection;
 	private String windSpeed;
 	private String updateTime;
 	private long time = 0;
@@ -22,7 +22,7 @@ public class Weather {
 		humidity = "";
 		pressure = "";
 		temperature = -999;
-		windDerection = "";
+		windDirection = "";
 		updateTime = "00:00";
 	}
 	
@@ -91,11 +91,11 @@ public class Weather {
 	}
 
 	public String getWindDerection() {
-		return windDerection;
+		return windDirection;
 	}
 
 	public void setWindDerection(String windDerection) {
-		this.windDerection = windDerection;
+		this.windDirection = windDerection;
 	}
 
 	public String getWindSpeed() {
