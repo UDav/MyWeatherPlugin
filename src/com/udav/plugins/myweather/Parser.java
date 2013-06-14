@@ -97,7 +97,7 @@ public class Parser {
 		return b;
 	}*/
 	
-	public static Weather weatherParse(String cityID){
+	public static Weather weatherParse(Context context, String cityID){
 		Weather w = new Weather();
 		NodeList nl = null;
 		
@@ -155,13 +155,15 @@ public class Parser {
 			int hours = date.getHours();
 			int min = date.getMinutes();
 			w.setUpdateTime(((hours<10)?"0"+hours:hours)+":"+((min<10)?"0"+min:min));
+			
+			DBHelper.setCurrentWeatherToDB(context, w);
 			return w;
 		} else return null;
 	}
 	
 	public static ArrayList<WeatherNextHours> arrWeatherNextHours;// = new ArrayList<WeatherNextHours>();
 	
-	public static ArrayList<ForecastWeather> parseForecast(String cityID){
+	public static ArrayList<ForecastWeather> parseForecast(Context context, String cityID){
 		ArrayList<ForecastWeather> forecast = new ArrayList<ForecastWeather>();
 		arrWeatherNextHours = new ArrayList<WeatherNextHours>();
 		
@@ -297,6 +299,7 @@ public class Parser {
 				}
 			}
 		//	arrWeatherNextHours.remove(25); // delete duplicate hour 0
+		DBHelper.setForecastWeatherToDB(context, forecast);
 		return forecast;	
 		} else return null;
 	}

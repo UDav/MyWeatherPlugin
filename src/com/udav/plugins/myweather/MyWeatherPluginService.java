@@ -53,6 +53,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		w = DBHelper.getCurrentWeatherFromDB(getBaseContext());
+		forecast = DBHelper.getForecastWeatherFromDB(getBaseContext());
 		/*//The intent to launch when the user clicks the expanded notification
 		Intent intent = new Intent("com.udav.extras.liveview.plugins.myweather.PREFERENCES");
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -84,8 +86,8 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	            				Log.d(PluginConstants.LOG_TAG, "Start timer!");
 	            				//set city id // get it this http://weather.yandex.ru/static/cities.xml
 	            				long time = System.currentTimeMillis();
-	            				w = Parser.weatherParse(cityID);
-	            				forecast = Parser.parseForecast(cityID);
+	            				w = Parser.weatherParse(getBaseContext(), cityID);
+	            				forecast = Parser.parseForecast(getBaseContext(), cityID);
 	            				changeData = true;
 	            				Log.d(PluginConstants.LOG_TAG, "update! "+(System.currentTimeMillis()-time));
 	            			}
