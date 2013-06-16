@@ -90,11 +90,11 @@ public class Weather {
 		this.pressure = pressure;
 	}
 
-	public String getWindDerection() {
+	public String getWindDirection() {
 		return windDirection;
 	}
 
-	public void setWindDerection(String windDerection) {
+	public void setWindDirection(String windDerection) {
 		this.windDirection = windDerection;
 	}
 

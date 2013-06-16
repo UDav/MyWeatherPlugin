@@ -231,7 +231,7 @@ public final class PluginUtils {
         
         //draw wind
         paint.setTextSize(10);
-        String wind = w.getWindDerection() + " " + w.getWindSpeed() + context.getString(R.string.windSpeed);
+        String wind = w.getWindDirection() + " " + w.getWindSpeed() + context.getString(R.string.windSpeed);
         Bitmap windPict = BitmapFactory.decodeResource(context.getResources(), R.drawable.wind);
         windPict = changeSize(windPict, 10);
         paint.getTextBounds(wind, 0, wind.length(), bounds);

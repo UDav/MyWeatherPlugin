@@ -139,7 +139,7 @@ public class Parser {
 								w.setHumidity(childOfChild.getTextContent());
 							}else
 							if ("wind_direction".equals(childOfChild.getNodeName())){
-								w.setWindDerection(childOfChild.getTextContent());
+								w.setWindDirection(childOfChild.getTextContent());
 							}else
 							if ("wind_speed".equals(childOfChild.getNodeName())) {
 								w.setWindSpeed(childOfChild.getTextContent());
@@ -220,7 +220,7 @@ public class Parser {
 								}
 							}
 						}
-						
+						DBHelper.setWeatherNextHoursToDB(context, arrWeatherNextHours);
 						
 						Node childOfChild = null;
 						for (int j=0; j<child.getChildNodes().getLength(); j++) {

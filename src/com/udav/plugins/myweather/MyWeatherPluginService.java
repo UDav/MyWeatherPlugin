@@ -53,8 +53,11 @@ public class MyWeatherPluginService extends AbstractPluginService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
 		w = DBHelper.getCurrentWeatherFromDB(getBaseContext());
 		forecast = DBHelper.getForecastWeatherFromDB(getBaseContext());
+		Parser.arrWeatherNextHours = DBHelper.getWeatherNextHoursFromDB(getBaseContext());
+		
 		/*//The intent to launch when the user clicks the expanded notification
 		Intent intent = new Intent("com.udav.extras.liveview.plugins.myweather.PREFERENCES");
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);

@@ -38,7 +38,7 @@ public class DBHelper extends SQLiteOpenHelper{
 	
 	public static Weather getCurrentWeatherFromDB(Context context){
 		SQLiteDatabase db = getDB(context);
-		Cursor mCursor = db.rawQuery("SELECT * FROM CurrenWeather ORDER BY id DESC LIMIT 1", new String[]{});
+		Cursor mCursor = db.rawQuery("SELECT * FROM CurrentWeather ORDER BY id DESC LIMIT 1", new String[]{});
 		
 		Weather weather = new Weather();
 		if (mCursor.getCount() == 0) return weather;
@@ -48,10 +48,10 @@ public class DBHelper extends SQLiteOpenHelper{
 			weather.setCity(mCursor.getString(mCursor.getColumnIndex("city")));
 			weather.setTemperature(mCursor.getShort(mCursor.getColumnIndex("temperature")));
 			weather.setWeatherType(mCursor.getString(mCursor.getColumnIndex("weatherType")));
-			weather.setImgID(mCursor.getInt(mCursor.getColumnIndex("ingID")));
+			weather.setImgID(mCursor.getInt(mCursor.getColumnIndex("imgID")));
 			weather.setHumidity(mCursor.getString(mCursor.getColumnIndex("humidity")));
 			weather.setPressure(mCursor.getString(mCursor.getColumnIndex("pressure")));
-			weather.setWindDerection(mCursor.getString(mCursor.getColumnIndex("windDirection")));
+			weather.setWindDirection(mCursor.getString(mCursor.getColumnIndex("windDirection")));
 			weather.setWindSpeed(mCursor.getString(mCursor.getColumnIndex("windSpeed")));
 			weather.setUpdateTime(mCursor.getString(mCursor.getColumnIndex("updateTime")));
 		
@@ -68,9 +68,9 @@ public class DBHelper extends SQLiteOpenHelper{
 		mContentValues.put("weatherType", weather.getWeatherType());
 		mContentValues.put("imgID", weather.getImgID());
 		mContentValues.put("humidity", weather.getHumidity());
-		mContentValues.put("presure", weather.getPressure());
+		mContentValues.put("pressure", weather.getPressure());
 		mContentValues.put("temperature", weather.getTemperature());
-		mContentValues.put("windDirection", weather.getWindDerection());
+		mContentValues.put("windDirection", weather.getWindDirection());
 		mContentValues.put("windSpeed", weather.getWindSpeed());
 		mContentValues.put("updateTime", weather.getUpdateTime());
 		
@@ -86,6 +86,7 @@ public class DBHelper extends SQLiteOpenHelper{
 		
 		if (mCursor.getCount() == 0) return forecastArray;
 		else {
+			mCursor.moveToFirst();
 			for (int i=0; i<mCursor.getCount(); i++) {
 				ForecastWeather forecast = new ForecastWeather();
 				forecast.setDate(mCursor.getString(mCursor.getColumnIndex("date")));
@@ -96,14 +97,15 @@ public class DBHelper extends SQLiteOpenHelper{
 				forecast.setDayWindDirection(mCursor.getString(mCursor.getColumnIndex("dayWindDirection")));
 				forecast.setDayWindSpeed(mCursor.getString(mCursor.getColumnIndex("dayWindSpeed")));
 			
-				forecast.setNightTemp(mCursor.getString(mCursor.getColumnIndex("nigthTemp")));
-				forecast.setNightImgID(mCursor.getInt(mCursor.getColumnIndex("nigthImgID")));
-				forecast.setNightHumidity(mCursor.getString(mCursor.getColumnIndex("nigthHumidity")));
-				forecast.setNightPressure(mCursor.getString(mCursor.getColumnIndex("nigthPressure")));
-				forecast.setNightWindDirection(mCursor.getString(mCursor.getColumnIndex("nigthWindDirection")));
-				forecast.setNightWindSpeed(mCursor.getString(mCursor.getColumnIndex("nigthWindSpeed")));
+				forecast.setNightTemp(mCursor.getString(mCursor.getColumnIndex("nightTemp")));
+				forecast.setNightImgID(mCursor.getInt(mCursor.getColumnIndex("nightImgID")));
+				forecast.setNightHumidity(mCursor.getString(mCursor.getColumnIndex("nightHumidity")));
+				forecast.setNightPressure(mCursor.getString(mCursor.getColumnIndex("nightPressure")));
+				forecast.setNightWindDirection(mCursor.getString(mCursor.getColumnIndex("nightWindDirection")));
+				forecast.setNightWindSpeed(mCursor.getString(mCursor.getColumnIndex("nightWindSpeed")));
 			
 				forecastArray.add(forecast);
+				mCursor.moveToNext();
 			}
 			return forecastArray;
 		}
@@ -112,9 +114,12 @@ public class DBHelper extends SQLiteOpenHelper{
 	public static boolean setForecastWeatherToDB(Context context, ArrayList<ForecastWeather> forecastArray){
 		SQLiteDatabase db = getDB(context);
 		
+		db.delete("ForecastWeather", null, null);
+		
+		
 		for (int i=0; i<forecastArray.size(); i++){
-			ContentValues mContentValues = new ContentValues();
 			ForecastWeather forecast = forecastArray.get(i);
+			ContentValues mContentValues = new ContentValues();
 			
 			mContentValues.put("date", forecast.getDate());
 			mContentValues.put("dayTemp", forecast.getDayTemp());
@@ -124,14 +129,53 @@ public class DBHelper extends SQLiteOpenHelper{
 			mContentValues.put("dayWindDirection", forecast.getDayWindDirection());
 			mContentValues.put("dayWindSpeed", forecast.getDayWindSpeed());
 			
-			mContentValues.put("nigthTemp", forecast.getNightTemp());
-			mContentValues.put("nigthImgID", forecast.getNightImgID());
-			mContentValues.put("nigthHumidity", forecast.getNightHumidity());
-			mContentValues.put("nigthPressure", forecast.getNightPressure());
-			mContentValues.put("nigthWindDirection", forecast.getNightWindDirection());
-			mContentValues.put("nigthWindSpeed", forecast.getNightWindSpeed());
+			mContentValues.put("nightTemp", forecast.getNightTemp());
+			mContentValues.put("nightImgID", forecast.getNightImgID());
+			mContentValues.put("nightHumidity", forecast.getNightHumidity());
+			mContentValues.put("nightPressure", forecast.getNightPressure());
+			mContentValues.put("nightWindDirection", forecast.getNightWindDirection());
+			mContentValues.put("nightWindSpeed", forecast.getNightWindSpeed());
 			
 			db.insert("ForecastWeather", null, mContentValues);
+		}
+		
+		return true;
+	}
+	
+	public static ArrayList<WeatherNextHours> getWeatherNextHoursFromDB(Context context){
+		SQLiteDatabase db = getDB(context);
+		ArrayList<WeatherNextHours> arrayWeatherNextHours = new ArrayList<WeatherNextHours>();
+		
+		Cursor mCursor = db.rawQuery("SELECT * FROM WeatherNextHours", new String[]{});
+		if (mCursor.getCount() == 0) return null;
+		else {
+			mCursor.moveToFirst();
+			for (int i=0; i<mCursor.getCount(); i++) {
+				WeatherNextHours weatherNextHours = new WeatherNextHours();
+				weatherNextHours.setTime(mCursor.getString(mCursor.getColumnIndex("time")));
+				weatherNextHours.setTemperature(mCursor.getString(mCursor.getColumnIndex("temperature")));
+				weatherNextHours.setPictID(mCursor.getInt(mCursor.getColumnIndex("pictID")));
+				arrayWeatherNextHours.add(weatherNextHours);
+				mCursor.moveToNext();
+			}
+		}
+		
+		return arrayWeatherNextHours;
+	}
+	
+	public static boolean setWeatherNextHoursToDB(Context context, 
+			ArrayList<WeatherNextHours> arrayWeatherNextHours) {
+		SQLiteDatabase db = getDB(context);
+		
+		db.delete("WeatherNextHours", null, null);
+		for (int i=0; i<arrayWeatherNextHours.size(); i++) {
+			WeatherNextHours weatherNextHours = arrayWeatherNextHours.get(i);
+			ContentValues mContentValues = new ContentValues();
+			mContentValues.put("time", weatherNextHours.getTime());
+			mContentValues.put("temperature", weatherNextHours.getTemperature());
+			mContentValues.put("pictID", weatherNextHours.getPictID());
+			
+			db.insert("WeatherNextHours", null, mContentValues);
 		}
 		
 		return true;
@@ -140,12 +184,21 @@ public class DBHelper extends SQLiteOpenHelper{
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL("create table City(id integer primary key autoincrement, cityID text, cityName text);");
-		db.execSQL("creare table CurrentWeather(id integer primary key autoincrement, city text, weatherType text, imgID integer" +
-				"humidity text, pressure text, temperature text, windDirection text, windSpeed text, updateTime text)");
-		db.execSQL("create table ForecastWeather(id integer primary key autoincrement, date text, dayTemp text, dayImgID integer," +
-				"dayHumidity text, dayPressure text, dayWindDirection text, dayWindSpeed text, nightTemp text, " +
-				"nightWeatherType text, nightImgID integer, nightHumidity text, nightPressure text, nightWindDirection text" +
-				"nightWindSpeed text)");
+		
+		db.execSQL("create table CurrentWeather(id integer primary key autoincrement, city text, weatherType text, " +
+				"imgID integer, humidity text, pressure text, temperature text, windDirection text, " +
+				"windSpeed text, updateTime text);");
+		
+		db.execSQL("create table ForecastWeather(id integer primary key autoincrement, date text, " +
+				"dayTemp text, dayImgID integer, dayHumidity text, dayPressure text, dayWindDirection text," +
+				"dayWindSpeed text, nightTemp text, nightImgID integer, " +
+				"nightHumidity text, nightPressure text, " +
+				"nightWindDirection text, nightWindSpeed text);");
+		
+		db.execSQL("CREATE TABLE WeatherNextHours(id integer primary key autoincrement, time text," +
+				"temperature text, pictID integer);");
+		
+		System.out.println("Create table OK!");
 	}
 
 	@Override
